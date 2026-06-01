@@ -89,17 +89,18 @@ const sortedEvents = useSortedEvents(events)
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 350px; /* 對齊原有卡片大約的高度 */
+  min-height: 350px; 
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.03);
+  background: linear-gradient(145deg, #0a1628 0%, #132a45 55%, #1a3a5c 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.35);
   border-radius: 20px;
   padding: 32px;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
+  box-shadow: 0 12px 32px rgba(9, 19, 33, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .card-content { position: relative; z-index: 2; }
@@ -108,15 +109,15 @@ const sortedEvents = useSortedEvents(events)
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
-  background: rgba(0, 0, 0, 0.4);
+  padding: 6px 14px;
+  background: rgba(14, 116, 144, 0.35);
   border-radius: 30px;
-  color: #00f2fe;
+  color: #7dd3fc;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 1px;
   margin-bottom: 16px;
-  border: 1px solid rgba(0, 242, 254, 0.3);
+  border: 1px solid rgba(125, 211, 252, 0.45);
 }
 
 .pulse-dot {
@@ -133,10 +134,21 @@ const sortedEvents = useSortedEvents(events)
   50% { opacity: 0.5; transform: scale(1.5); }
   100% { opacity: 1; transform: scale(1); }
 }
+.secret-title {
+  color: #f8fafc;
+  font-size: 1.5rem;
+  margin: 0 0 12px 0;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  transition: color 0.3s, text-shadow 0.3s;
+}
 
-.secret-title { color: #ffffff; font-size: 1.5rem; margin: 0 0 12px 0; font-weight: 700; transition: color 0.3s; }
-.secret-desc { color: #a0aec0; font-size: 0.95rem; line-height: 1.6; margin: 0; }
-
+.secret-desc {
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  margin: 0;
+}
 .hover-glow {
   position: absolute;
   bottom: -50px;
@@ -160,9 +172,7 @@ const sortedEvents = useSortedEvents(events)
 .secret-event-card:hover .hover-glow { opacity: 1; }
 
 .secret-event-card:hover .secret-title {
-  background: linear-gradient(135deg, #fff, #ff007a);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #e0f2fe;
+  text-shadow: 0 0 18px rgba(125, 211, 252, 0.55);
 }
 </style>

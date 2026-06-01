@@ -1,0 +1,56 @@
+{
+  "headers": [
+    {
+      "source": "/assets/(.*)\\.docx",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)\\.doc",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/msword"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)\\.pptx",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)\\.ppt",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/vnd.ms-powerpoint"
+        }
+      ]
+    }
+  ]
+}
