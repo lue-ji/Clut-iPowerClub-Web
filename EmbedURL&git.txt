@@ -1,0 +1,13 @@
+<iframe src="https://www.youtube.com/embed/_HbfiDjQdn0?autoplay=0&rel=0" title="iPower 大型運動會回顧" allowfullscreen></iframe>
+<iframe src="https://www.instagram.com/reel/DXZhdMzkXs7/embed" title="iPower 精彩短影音" allowtransparency="true" scrolling="no" allowfullscreen></iframe>
+<iframe src="https://www.instagram.com/p/DXd_30uERD8/embed" title="iPower 精選貼文" allowtransparency="true" scrolling="no" allowfullscreen></iframe>
+
+
+
+
+
+
+
+
+
+https://github.com/lue-ji/Clut-iPowerClub-Web.git-->做git init用

@@ -1,0 +1,346 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+#nprogress.bar { background: #234d74 !important; }
+:root {
+  --primary: #234d74;
+  --primary-dark: #17324c;
+  --primary-light: #edf3f8;
+
+  --accent: #5f87a8;
+  --dark: #102235;
+  --text: #1b2430;
+  --muted: #748091;
+
+  --bg: #f3f2f8;
+  --card: #ffffff;
+  --border: #dde4ec;
+
+  --shadow: 0 10px 30px rgba(16, 34, 53, 0.08);
+  --shadow-hover: 0 18px 40px rgba(16, 34, 53, 0.12);
+
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  --container: 1120px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {min-height: 100%;}
+::selection {
+  background-color: var(--primary-dark);
+  color: white;
+}
+::-moz-selection {
+  background-color: var(--primary-dark);
+  color: white;
+}
+
+body {
+  font-family: 'Noto Sans TC', 'Helvetica Neue', Arial, 'Microsoft JhengHei', sans-serif;
+  -webkit-font-smoothing: antialiased; /* 字體在Mac上看起來更平滑 */
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.page {
+  width: min(var(--container), calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.section {padding: 80px 0;}
+.section-sm {padding: 56px 0;}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  color: white;
+  background: linear-gradient(135deg, #17324c 0%, #234d74 50%, #5f87a8 100%);
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900;
+  margin-bottom: 20px;
+  line-height: 1.05;
+}
+
+.hero-text {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 auto 20px;
+  max-width: 760px;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 1;
+  opacity: 0.5;
+}
+
+.relative-z {
+  position: relative;
+  z-index: 2;
+}
+
+.title {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+  margin-bottom: 14px;
+  text-align: center;
+  color: var(--primary-dark);
+  letter-spacing: 0.01em;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--muted);
+  margin-bottom: 38px;
+  line-height: 1.9;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid rgba(221, 228, 236, 0.7);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+.grid {display: grid;gap: 24px;}
+
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 22px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.96;
+  box-shadow: 0 10px 24px rgba(23, 50, 76, 0.18);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--primary);
+  color: var(--primary-dark);
+  border-radius: 999px;
+  padding: 12px 22px;
+  font-weight: 700;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.pill,
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.desc {
+  white-space: pre-line;
+  line-height: 1.9;
+  color: var(--muted);
+}
+
+.section-soft {
+  background: linear-gradient(135deg, #eef3f8, #f7f8fc);
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fadeIn 0.65s ease forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 900px) {
+  .grid-4,
+  .grid-3,
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .section {
+    padding: 60px 0;
+  }
+}
+/* ==========================================
+   iPower 統一設計系統 (Shared Styles)
+   ========================================== */
+
+/* 1. 統一的渲染感背景 (Mesh Gradients) */
+.ip-bg-soft {
+  background: radial-gradient(at 0% 0%, #e2eef9 0%, transparent 50%),
+              radial-gradient(at 100% 100%, #e6e9f5 0%, transparent 50%),
+              #f4f7fb;
+}
+
+.ip-bg-blue {
+  background: radial-gradient(at 100% 0%, #dce8f5 0%, transparent 50%),
+              radial-gradient(at 0% 100%, #eef1f6 0%, transparent 50%),
+              #f8fafc;
+}
+
+/* 2. 統一的毛玻璃卡片 (Glassmorphism) */
+/* 淺色版：適用於渲染感背景上 */
+.ip-glass-card {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 15px 35px rgba(23, 50, 76, 0.08);
+  border-radius: 24px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ip-glass-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(23, 50, 76, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* 深色版：適用於深色 Hero 區塊 */
+.ip-glass-dark {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
+  border-left: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  border-radius: 28px;
+}
+
+/* 3. 統一的標籤與裝飾 (Badges & Pills) */
+.ip-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 0.88rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+/* ==========================================
+   iPower 影音嵌入容器 (Video Embeds)
+   ========================================== */
+/* 通用影片外框 (結合毛玻璃設計) */
+.ip-video-wrapper {
+  background: rgba(255, 255, 255, 0.5);
+  padding: 16px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 15px 35px rgba(23, 50, 76, 0.08);
+  margin: 0 auto;
+}
+
+/* YouTube (16:9 比例) */
+.video-container-16by9 {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 比例的黃金密碼 */
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* IG Reels / 直式短影音 (9:16 比例) */
+.video-container-9by16 {
+  position: relative;
+  width: 100%;
+  max-width: 360px; /* 直式影片不宜過寬，限制最大寬度 */
+  margin: 0 auto;
+  padding-bottom: 177.77%; /* 16:9 的顛倒比例 */
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* 讓裡面的 iframe 填滿容器 */
+.video-container-16by9 iframe,
+.video-container-9by16 iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
