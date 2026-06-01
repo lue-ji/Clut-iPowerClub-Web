@@ -29,7 +29,7 @@
         </div>
         
         <div class="image-wrapper fade-in">
-          <img src="F:\Codpract\project\Ipower_social\ipower-web\src\assets\pub\remind.jpg" alt="團隊合作" class="about-img" />
+          <img src="@/assets/pub/remind.jpg" alt="團隊合作" class="about-img" />
         </div>
       </div>
     </section>
