@@ -74,7 +74,14 @@ export const getLatestEvent = (events) => {
     .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
   if (upcoming.length) return upcoming[0]
 
-  // 3. 都沒有，則Return null
+  // 3. 改顯示最近一場已結束的精選活動
+  const completed = events
+    .filter(isExpired)
+    .sort((a, b) => new Date(b.endDate) - new Date(a.endDate))
+  const featuredCompleted = completed.filter((e) => e.featured)
+  if (featuredCompleted.length) return featuredCompleted[0]
+  if (completed.length) return completed[0]
+
   return null
 }
 

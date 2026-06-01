@@ -25,8 +25,13 @@
             <h2 class="title-sm">🎉 活動精選</h2>
           </div>
           <div class="grid grid-3">
-            <router-link :to="`/events/${event.slug}`" v-for="event in sortedEvents" :key="event.id" class="card event-card-glass fade-in">
-              <img :src="event.image" class="event-image" :alt="event.title" />
+            <router-link
+              :to="`/events/${event.slug}`"
+              v-for="event in sortedEvents"
+              :key="event.id"
+              class="card event-card-glass fade-in"
+            >
+              <img :src="event.image" class="event-image" :alt="event.title" loading="lazy" decoding="async" />
               <div class="event-body">
                 <span class="tag">{{ event.type }}</span>
                 <h3>{{ event.title }}</h3>
@@ -37,26 +42,53 @@
         </div>
 
         <div v-if="activeTab === 'all' || activeTab === 'stories'" class="content-section">
-          <div class="section-head-mini">
+          <div class="section-head-mini smile-head">
             <h2 class="title-sm">😊 微笑牆</h2>
+            <button
+              v-if="!loading"
+              type="button"
+              class="btn btn-outline btn-sm"
+              @click="fetchData"
+            >
+              重新整理
+            </button>
           </div>
-          
+
           <p v-if="loading" class="state-text">笑容正在路途上...</p>
-          
-          <div v-else class="masonry-container">
-            <div v-for="item in mergedStories" :key="item.time" class="card smile-card-glass masonry-item fade-in">
+
+          <div v-else-if="fetchError && !mergedStories.length" class="state-box error-box">
+            <p>{{ fetchError }}</p>
+            <button type="button" class="btn btn-sm" @click="fetchData">再試一次</button>
+          </div>
+
+          <p v-else-if="usingFallback" class="state-hint">目前顯示離線備用留言（API 暫時無法連線）</p>
+
+          <div v-if="!loading && mergedStories.length" class="masonry-container">
+            <div
+              v-for="(item, index) in mergedStories"
+              :key="`${item.time || 't'}-${item.name}-${index}`"
+              class="card smile-card-glass masonry-item fade-in"
+            >
               <div class="smile-card-content">
-                <img :src="item.image || defaultAvatar" class="smile-img" alt="微笑牆頭像" />
+                <img
+                  :src="item.image || defaultAvatar"
+                  class="smile-img"
+                  :alt="`${item.name || '社員'}的留言`"
+                  loading="lazy"
+                  decoding="async"
+                />
                 <div class="smile-body">
                   <p class="smile-text">「{{ item.text || '超開心的一天～😆' }}」</p>
                   <div class="smile-footer">
-                    <span class="smile-name">— {{ item.name }}</span>
+                    <span class="smile-name">— {{ item.name || '匿名夥伴' }}</span>
                     <span class="smile-date" v-if="item.time">{{ formatDate(item.time) }}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <p v-else-if="!loading && !mergedStories.length" class="state-text">還沒有留言，歡迎到加入我們頁分享心得！</p>
         </div>
       </div>
     </section>
@@ -67,23 +99,31 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { getMessages } from '../api/message'
 import { events } from '../data/events'
-import { stories } from '../data/stories'
+import { smileWallFallback } from '../data/smileWallFallback'
 import { useSortedEvents } from '@/composables/useSortedEvents'
+import logoPng from '@/../logo.png'
 
 const activeTab = ref('all')
 const loading = ref(true)
+const fetchError = ref('')
 const apiStories = ref([])
-const defaultAvatar = 'https://i.pravatar.cc/150'
+const usingFallback = ref(false)
+const defaultAvatar = logoPng
 let intervalId = null
 
 const fetchData = async () => {
+  loading.value = true
+  fetchError.value = ''
   try {
     const data = await getMessages()
     apiStories.value = data
-  } catch (err) {
-    // 失敗時使用本地備用數據，不在控制台輸出錯誤
+    usingFallback.value = false
+  } catch {
     if (apiStories.value.length === 0) {
-      console.warn('微笑牆連接失敗，使用本地備用數據')
+      usingFallback.value = true
+      fetchError.value = ''
+    } else {
+      fetchError.value = '無法更新最新留言，仍顯示上次載入的內容。'
     }
   } finally {
     loading.value = false
@@ -91,31 +131,50 @@ const fetchData = async () => {
 }
 
 const sortedEvents = useSortedEvents(events)
-const mergedStories = computed(() => apiStories.value.length > 0 ? apiStories.value : stories)
+const mergedStories = computed(() => {
+  if (apiStories.value.length > 0) return apiStories.value
+  if (usingFallback.value) return smileWallFallback
+  return []
+})
 
 const formatDate = (dateStr) => {
   const d = new Date(dateStr)
+  if (Number.isNaN(d.getTime())) return ''
   return `${d.getMonth() + 1}/${d.getDate()}`
+}
+
+const startPolling = () => {
+  if (intervalId) clearInterval(intervalId)
+  intervalId = setInterval(() => {
+    if (document.visibilityState === 'visible') fetchData()
+  }, 60000)
+}
+
+const handleVisibility = () => {
+  if (document.visibilityState === 'visible') fetchData()
 }
 
 onMounted(() => {
   fetchData()
-  intervalId = setInterval(fetchData, 60000)
+  startPolling()
+  document.addEventListener('visibilitychange', handleVisibility)
 })
-onUnmounted(() => clearInterval(intervalId))
+
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId)
+  document.removeEventListener('visibilitychange', handleVisibility)
+})
 </script>
 
 <style scoped>
 .interaction-view { overflow-x: hidden; }
 
-/* Hero 背景光暈 */
 .interaction-hero {
   position: relative; background: #091321; padding: 100px 0; overflow: hidden; text-align: center;
 }
 .glow-1 { width: 400px; height: 400px; background: rgba(95, 135, 168, 0.4); top: -10%; left: -5%; }
 .glow-2 { width: 350px; height: 350px; background: rgba(138, 99, 210, 0.3); bottom: -10%; right: -5%; }
 
-/* 分類按鈕與微漸層背景 [cite: 167-169] */
 .soft-mesh-bg {
   background: radial-gradient(at 0% 0%, #f0f4f8 0%, #ffffff 50%, #f7f9fc 100%);
   min-height: 80vh;
@@ -127,7 +186,6 @@ onUnmounted(() => clearInterval(intervalId))
 }
 .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); transform: scale(1.05); }
 
-/* 活動卡片優化 [cite: 171] */
 .event-card-glass {
   display: block; text-decoration: none; color: inherit; border-radius: 20px; overflow: hidden;
   background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid white;
@@ -137,18 +195,16 @@ onUnmounted(() => clearInterval(intervalId))
 .event-image { width: 100%; height: 200px; object-fit: cover; }
 .event-body { padding: 20px; }
 
-/* 🌟 核心：瀑布流佈局 [cite: 175] */
 .masonry-container {
   column-count: 3;
   column-gap: 20px;
   width: 100%;
 }
 .masonry-item {
-  break-inside: avoid; /* 防止卡片被切斷 */
+  break-inside: avoid;
   margin-bottom: 20px;
 }
 
-/* 微笑牆毛玻璃卡片 [cite: 190] */
 .smile-card-glass {
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(12px);
@@ -166,10 +222,26 @@ onUnmounted(() => clearInterval(intervalId))
 .smile-date { font-size: 0.8rem; color: var(--muted); }
 
 .content-section { margin-bottom: 60px; }
-.title-sm { font-size: 1.5rem; margin-bottom: 24px; color: var(--primary-dark); }
+.smile-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.title-sm { font-size: 1.5rem; margin-bottom: 0; color: var(--primary-dark); }
 .state-text { text-align: center; color: var(--muted); padding: 40px; }
+.state-hint {
+  text-align: center;
+  color: var(--accent);
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+.state-box {
+  text-align: center;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+.error-box {
+  background: #fef2f2;
+  color: #991b1b;
+}
 
-/* 響應式處理 */
 @media (max-width: 1000px) { .masonry-container { column-count: 2; } }
 @media (max-width: 600px) { .masonry-container { column-count: 1; } }
 </style>

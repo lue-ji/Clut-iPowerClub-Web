@@ -122,8 +122,7 @@ const loading = ref(false)
 const error = ref(null)
 
 const DEADLINE = new Date('2026-09-28T23:00:00')
-const EARLY_EARLY_DATE = new Date('2026-09-25T19:30:00') 
-const START_DATE = new Date('2026-09-23T17:50:00')
+const EARLY_EARLY_DATE = new Date('2026-09-25T19:30:00')
 
 const now = ref(new Date())
 let timerId = null
@@ -135,28 +134,24 @@ const currentFee = computed(() => {
   return 200
 })
 
-const countdown = computed(() => {
-  const diff = DEADLINE - now.value
-  if (diff <= 0) return { days: 0, hours: 0, minutes: 0 }
-  return {
-    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-    minutes: Math.floor((diff / (1000 * 60)) % 60)
-  }
+onMounted(() => {
+  timerId = setInterval(() => {
+    now.value = new Date()
+  }, 60000)
 })
-
-const progressWidth = computed(() => {
-  const total = DEADLINE - START_DATE
-  const elapsed = now.value - START_DATE
-  return Math.min(100, Math.max(0, (elapsed / total) * 100))
-})
-
-onMounted(() => { timerId = setInterval(() => { now.value = new Date() }, 60000) })
 onUnmounted(() => clearInterval(timerId))
+
+const MAX_IMAGE_BYTES = 2 * 1024 * 1024
 
 const handleFileChange = (e) => {
   const file = e.target.files[0]
   if (!file) return
+  if (file.size > MAX_IMAGE_BYTES) {
+    error.value = '圖片請小於 2MB，請換一張再試。'
+    e.target.value = ''
+    return
+  }
+  error.value = null
   imagePreview.value = URL.createObjectURL(file)
   const reader = new FileReader()
   reader.onload = (res) => { form.value.image = res.target.result }
@@ -173,13 +168,19 @@ const submitForm = async () => {
   try {
     loading.value = true
     error.value = null
+    const token = import.meta.env.VITE_JOIN_FORM_TOKEN
+    if (!token) {
+      throw new Error('系統尚未設定報名驗證，請稍後再試或聯繫幹部。')
+    }
+
     const result = await postMessage({
       ...form.value,
-      token: 'ipower123',
-      type: form.value.text || form.value.image ? 'story' : 'join'
+      token,
+      type: form.value.text || form.value.image ? 'story' : 'join',
     })
-    
+
     if (result.status === 'success') {
+      submitted.value = true
       Swal.fire({
         title: '🎉 權限開通申請成功！',
         text: '已收到您的檔案，近期會再透過IG或Line與你聯繫~~~',

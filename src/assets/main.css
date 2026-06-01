@@ -243,6 +243,23 @@ img {
     padding: 60px 0;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .fade-in {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
 /* ==========================================
    iPower 統一設計系統 (Shared Styles)
    ========================================== */

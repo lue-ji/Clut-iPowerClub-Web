@@ -42,31 +42,4 @@ export const stories = [
     date: '2026-05-28',
     featured: true
   },
-  {
-    id: 5,
-    slug: '',
-    author: '',
-    excerpt: '',
-    image: getImage('staff', '.jpg'),
-    date: '',
-    featured: true
-  },
-    {
-    id: 6,
-    slug: '',
-    author: '',
-    excerpt: '',
-    image: getImage('staff', '.jpg'),
-    date: '',
-    featured: true
-  },
-    {
-    id: 7,
-    slug: '',
-    author: '',
-    excerpt: '',
-    image: getImage('staff', '.jpg'),
-    date: '',
-    featured: true
-  },
 ]

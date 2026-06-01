@@ -34,7 +34,12 @@
 
         <div class="faq-contact fade-in">
           <p>沒找到你想問的嗎？</p>
-          <a href="https://instagram.com" target="_blank" class="btn hero-btn-secondary faq-btn">
+          <a
+            href="https://www.instagram.com/clut_ipower/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn hero-btn-secondary faq-btn"
+          >
             直接私訊 IG 小編
           </a>
         </div>

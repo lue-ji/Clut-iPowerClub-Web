@@ -14,13 +14,20 @@ const scrollToTop = () => {
 <template>
 <div class="app-container">
     <Navbar />
-    <router-view v-slot="{ Component }"> <CookieBanner />
+    <CookieBanner />
+    <router-view v-slot="{ Component }">
       <transition name="page-fade" mode="out-in">
         <component :is="Component" />
       </transition>
     </router-view>
     <transition name="fade">
-      <button v-show="showBackToTop" class="back-to-top" @click="scrollToTop">
+      <button
+        v-show="showBackToTop"
+        type="button"
+        class="back-to-top"
+        aria-label="回到頁首"
+        @click="scrollToTop"
+      >
         ↑
       </button>
     </transition>

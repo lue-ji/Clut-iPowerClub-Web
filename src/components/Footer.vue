@@ -14,8 +14,13 @@
       </div>
 
       <div class="footer-contact">
-        <p>📷 IG:@clut_ipower</p>
-        <p>📧 Email:xxxxxxx@gmail.com</p>
+        <p>
+          📷
+          <a href="https://www.instagram.com/clut_ipower/" target="_blank" rel="noopener noreferrer">
+            IG @clut_ipower
+          </a>
+        </p>
+        <p>歡迎透過 IG 私訊與我們聯繫</p>
       </div>
     </div>
 
@@ -57,6 +62,15 @@
 }
 
 .footer-links a:hover {
+  color: white;
+}
+
+.footer-contact a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: underline;
+}
+
+.footer-contact a:hover {
   color: white;
 }
 

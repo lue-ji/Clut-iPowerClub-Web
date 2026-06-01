@@ -20,9 +20,21 @@ const routes = [
   { path: '/media', component: () => import('../views/MediaView.vue') },
   // 👇 新增：Minigame 遊戲實驗室路由 (懶加載)
   { path: '/minigame', component: () => import('../views/MiniGM.vue') },
-  // 👇 修改：攔截所有未定義的網址，直接導回首頁 (防呆機制)
-  { path: '/:pathMatch(.*)*', redirect: '/' }
+  { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('../views/NotFoundView.vue') },
 ]
+
+const PAGE_TITLES = {
+  '/': 'iPower 社團 | 讓每個人發揮正向影響力',
+  '/about': '關於我們 | iPower 社團',
+  '/events': '活動總覽 | iPower 社團',
+  '/interaction': '互動 Bar | iPower 社團',
+  '/join': '加入我們 | iPower 社團',
+  '/staff': '認識團隊 | iPower 社團',
+  '/faq': '常見問題 | iPower 社團',
+  '/resources': '社團知識庫 | iPower 社團',
+  '/media': '影音專區 | iPower 社團',
+  '/minigame': '遊戲實驗室 | iPower 社團',
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,9 +54,17 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
-// after切換
-router.afterEach(() => {
+router.afterEach((to) => {
   NProgress.done()
+  if (to.name === 'not-found') {
+    document.title = '找不到頁面 | iPower 社團'
+    return
+  }
+  if (to.path.startsWith('/events/') && to.params.slug) {
+    document.title = '活動詳情 | iPower 社團'
+    return
+  }
+  document.title = PAGE_TITLES[to.path] || 'iPower 社團'
 })
 
 export default router
