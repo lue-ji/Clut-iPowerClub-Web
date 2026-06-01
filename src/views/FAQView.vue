@@ -34,14 +34,17 @@
 
         <div class="faq-contact fade-in">
           <p>沒找到你想問的嗎？</p>
-          <a
-            href="https://www.instagram.com/clut_ipower/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn hero-btn-secondary faq-btn"
-          >
-            直接私訊 IG 小編
-          </a>
+          <div class="faq-contact-actions">
+            <IgQrCard variant="panel" hint="電腦版可掃碼追蹤" class="faq-ig-qr" />
+            <a
+              href="https://www.instagram.com/clut_ipower/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn hero-btn-secondary faq-btn"
+            >
+              直接私訊 IG 小編
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -50,6 +53,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import IgQrCard from '@/components/IgQrCard.vue'
 
 const faqs = ref([
   { 
@@ -165,6 +169,22 @@ const toggleFaq = (index) => {
   margin-top: 40px;
   color: var(--muted);
 }
+.faq-contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 16px;
+}
+.faq-ig-qr {
+  display: none;
+}
+@media (min-width: 768px) {
+  .faq-ig-qr {
+    display: inline-flex;
+  }
+}
 .faq-btn {
   display: inline-block;
   background: white;
@@ -174,7 +194,7 @@ const toggleFaq = (index) => {
   border-radius: 999px;
   font-weight: 700;
   text-decoration: none;
-  margin-top: 12px;
+  margin-top: 0;
   transition: all 0.2s;
 }
 .faq-btn:hover {

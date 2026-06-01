@@ -24,10 +24,25 @@
           </div>
         </div>
         <div class="hero-visual fade-in">
-          <div class="hero-visual-card glass-morphism">
-            <div class="hero-emoji">🚀</div>
-            <h3>從參與者，成為帶來改變的人</h3>
-            <p>透過活動、合作與挑戰，一步步看見自己的價值。</p>
+          <div class="hero-visual-stack">
+            <div class="hero-visual-card glass-morphism">
+              <div class="hero-emoji">🚀</div>
+              <h3>從參與者，成為帶來改變的人</h3>
+              <p>透過活動、合作與挑戰，一步步看見自己的價值。</p>
+            </div>
+            <IgQrCard
+              variant="home"
+              hint="掃碼追蹤社團 IG"
+              class="hero-ig-qr"
+            />
+            <a
+              href="https://www.instagram.com/clut_ipower/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hero-ig-link-mobile"
+            >
+              追蹤 IG @clut_ipower
+            </a>
           </div>
         </div>
       </div>
@@ -193,6 +208,7 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import confetti from 'canvas-confetti'
 import { events } from '@/data/events'
 import { getLatestEvent, getFeaturedEvents } from '@/utils/events'
+import IgQrCard from '@/components/IgQrCard.vue'
 import logoPng from '@/../logo.png'
 
 const latestEvent = computed(() => {
@@ -332,6 +348,34 @@ const triggerFirework = (index, event) => {
 .relative-z { position: relative; z-index: 10; }
 .hero-layout { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: center; }
 .hero-visual { display: flex; justify-content: center; align-items: center; width: 100%; }
+.hero-visual-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 360px;
+}
+.hero-ig-qr { display: none; }
+.hero-ig-link-mobile {
+  display: inline-flex;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+.hero-ig-link-mobile:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+@media (min-width: 768px) {
+  .hero-ig-qr { display: inline-flex; }
+  .hero-ig-link-mobile { display: none; }
+}
 .glass-morphism { width: 100%; max-width: 360px; padding: 40px 28px; border-radius: 28px; text-align: center; background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.25); border-top: 1px solid rgba(255, 255, 255, 0.45); border-left: 1px solid rgba(255, 255, 255, 0.45); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); }
 .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 24px; }
 .hero-btn-primary { background: white; color: #0b1727; font-weight: 800; padding: 14px 28px; border-radius: 999px; }

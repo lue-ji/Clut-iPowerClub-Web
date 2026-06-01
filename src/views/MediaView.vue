@@ -1,3 +1,7 @@
+<script setup>
+import IgQrCard from '@/components/IgQrCard.vue'
+</script>
+
 <template>
   <div class="media-view section">
     <div class="page page-header text-center fade-in">
@@ -70,11 +74,14 @@
 
         <div class="ig-showcase">
           <div class="ig-showcase-header">
-            <span class="ig-showcase-emoji">📱</span>
-            <div>
-              <h3 class="ig-showcase-title">Instagram 精選動態</h3>
-              <p class="ig-showcase-desc">追蹤我們的 Reels 與貼文，掌握社團最新花絮</p>
+            <div class="ig-showcase-intro">
+              <span class="ig-showcase-emoji">📱</span>
+              <div>
+                <h3 class="ig-showcase-title">Instagram 精選動態</h3>
+                <p class="ig-showcase-desc">追蹤我們的 Reels 與貼文，掌握社團最新花絮</p>
+              </div>
             </div>
+            <IgQrCard variant="panel" hint="掃碼追蹤 @clut_ipower" class="media-ig-qr" />
           </div>
           <div class="ig-embed-panel">
             <div class="ip-video-wrapper ig-embed-card">
@@ -220,12 +227,32 @@
 .ig-showcase-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  text-align: left;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
   margin-bottom: 28px;
   padding-bottom: 24px;
   border-bottom: 1px solid var(--border);
+}
+
+.ig-showcase-intro {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+  flex: 1;
+  min-width: 200px;
+}
+
+.media-ig-qr {
+  display: none;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .media-ig-qr {
+    display: inline-flex;
+  }
 }
 
 .ig-showcase-emoji {
@@ -273,6 +300,11 @@
 
 @media (max-width: 900px) {
   .ig-showcase-header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ig-showcase-intro {
     flex-direction: column;
     text-align: center;
   }

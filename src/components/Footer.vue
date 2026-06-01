@@ -1,3 +1,7 @@
+<script setup>
+import IgQrCard from '@/components/IgQrCard.vue'
+</script>
+
 <template>
   <footer class="footer">
     <div class="page footer-container">
@@ -14,8 +18,8 @@
       </div>
 
       <div class="footer-contact">
+        <IgQrCard variant="footer" :show-caption="true" class="footer-ig-qr" />
         <p>
-          📷
           <a href="https://www.instagram.com/clut_ipower/" target="_blank" rel="noopener noreferrer">
             IG @clut_ipower
           </a>
@@ -72,6 +76,17 @@
 
 .footer-contact a:hover {
   color: white;
+}
+
+.footer-ig-qr {
+  display: none;
+  margin-bottom: 12px;
+}
+
+@media (min-width: 768px) {
+  .footer-ig-qr {
+    display: inline-flex;
+  }
 }
 
 .copyright {
