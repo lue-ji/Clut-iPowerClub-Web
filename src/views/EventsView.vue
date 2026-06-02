@@ -69,21 +69,18 @@ const sortedEvents = useSortedEvents(events)
 .event-content { padding: 24px; display: flex; flex-direction: column; flex-grow: 1; }
 .event-title { margin: 0 0 12px 0; color: var(--primary-dark); font-size: 1.3rem; }
 
-/* 👇 已修復警告的代碼 */
-.event-desc { 
-  margin: 0; 
-  color: var(--muted); 
-  line-height: 1.7; 
-  font-size: 0.95rem; 
-  display: -webkit-box; 
-  -webkit-line-clamp: 3; 
-  line-clamp: 3; 
-  -webkit-box-orient: vertical; 
-  box-orient: vertical;
-  overflow: hidden; 
+.event-desc {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 0.95rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* --- 👇 新增的彩蛋卡片專屬樣式 --- */
 .secret-event-card {
   position: relative;
   display: flex;
