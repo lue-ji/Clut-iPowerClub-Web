@@ -93,6 +93,13 @@ import IgQrCard from '@/components/IgQrCard.vue'
                   scrolling="no"
                   allowtransparency="true"
                 ></iframe>
+                <iframe
+                  src="https://www.instagram.com/p/DY7IFmpPo9E/embed"
+                  title="致理iPower最新活動"
+                  frameborder="0"
+                  scrolling="no"
+                  allowtransparency="true"
+                ></iframe>
               </div>
             </div>
           </div>
