@@ -486,8 +486,82 @@ onMounted(() => {
 
 /* RWD */
 @media (max-width: 900px) {
-  .split-layout { grid-template-columns: 1fr; }
-  .image-wrapper { order: -1; /* 在手機版讓圖片跑到文字上方 */ }
+  .about-hero {
+    padding: 92px 0 72px;
+  }
+
+  .split-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .image-wrapper {
+    order: -1;
+    border-radius: 18px;
+  }
+
+  .core-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .story-highlight {
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .story-highlight h2 {
+    font-size: clamp(1.5rem, 8vw, 2rem);
+  }
+
+  .stories-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .story-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .story-media img {
+    width: 100%;
+    height: 140px;
+  }
+
+  .cta-inner {
+    padding: 0 4px;
+  }
+
+  .cta-inner .title {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-hero {
+    padding: 80px 0 60px;
+  }
+
+  .section-head-center .title {
+    font-size: 1.5rem;
+  }
+
+  .section-head-center .subtitle,
+  .story-highlight p,
+  .desc {
+    font-size: 0.98rem;
+    line-height: 1.7;
+  }
+
+  .value-pill-row {
+    gap: 8px;
+  }
+
+  .value-pill {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 /* Particle canvas: fixed full-page, non-interactive to DOM events */
