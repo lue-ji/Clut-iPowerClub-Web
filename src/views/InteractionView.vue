@@ -111,7 +111,7 @@ const usingFallback = ref(false)
 const defaultAvatar = logoPng
 let intervalId = null
 
-const fetchData = async () => {
+const fetchData = async () => { 
   loading.value = true
   fetchError.value = ''
   try {
