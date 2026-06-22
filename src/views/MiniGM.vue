@@ -108,7 +108,7 @@ const activeGame = ref('menu')
 
 .back-link { color: #94a3b8; text-decoration: none; font-size: 1rem; font-weight: 600; transition: color 0.3s; }
 .back-link:hover { color: #fff; }
-.active-game-container { width: 100%; height: 100%; }
+.active-game-container { width: 100%;flex: 1; display: flex; flex-direction: column;}
 
 @media (max-width: 980px) {
   .glass-board {
@@ -116,63 +116,33 @@ const activeGame = ref('menu')
     min-height: 520px;
     max-height: 92vh;
   }
-
-  .hub-menu {
-    padding: 24px 16px;
-  }
-
-  .hub-title {
-    font-size: clamp(1.9rem, 7vw, 2.8rem);
-    letter-spacing: 2px;
-  }
-
-  .game-cards-container {
-    gap: 16px;
-  }
+  .hub-menu {padding: 24px 16px;}
+  .hub-title {font-size: clamp(1.9rem, 7vw, 2.8rem);letter-spacing: 2px;}
+  .game-cards-container {gap: 16px;}
 }
 
 @media (max-width: 640px) {
-  .slangsnap-game-layout {
-    min-height: 100svh;
-    align-items: stretch;
-  }
-
+  .slangsnap-game-layout {min-height: 100svh;align-items: stretch;}
   .glass-board {
-    width: 100%;
-    max-width: none;
-    min-height: 100svh;
-    border-radius: 0;
-    max-height: none;
-  }
+   width: 100%;max-width: none;min-height: 100svh;border-radius: 0;max-height: none;}
+  .hub-menu {padding: 18px 14px 24px;justify-content: flex-start;}
+  .hub-title {font-size: 1.8rem;line-height: 1.15;}
+  .hub-desc {font-size: 0.98rem;margin-bottom: 24px;}
+  .game-card {flex: 1 1 100%;padding: 18px 14px;}
+  .game-card h3 {font-size: 1.02rem;letter-spacing: 1px;}
+  .game-card p {font-size: 0.92rem;}
+}
 
-  .hub-menu {
-    padding: 18px 14px 24px;
-    justify-content: flex-start;
-  }
+.active-game-container :deep(.game-module-wrapper) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 
-  .hub-title {
-    font-size: 1.8rem;
-    line-height: 1.15;
-  }
-
-  .hub-desc {
-    font-size: 0.98rem;
-    margin-bottom: 24px;
-  }
-
-  .game-card {
-    flex: 1 1 100%;
-    padding: 18px 14px;
-  }
-
-  .game-card h3 {
-    font-size: 1.02rem;
-    letter-spacing: 1px;
-  }
-
-  .game-card p {
-    font-size: 0.92rem;
-  }
+.active-game-container :deep(.game-area) {
+  flex: 1;
+  display: flex; 
+  flex-direction: column;
 }
 
 .hub-title, .game-title, .badge {font-family: 'Space Grotesk', sans-serif;letter-spacing: 2px; }

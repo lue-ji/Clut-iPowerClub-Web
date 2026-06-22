@@ -93,34 +93,49 @@ const startGame = () => {
   isWin.value = false
   
   nextTick(() => {
-    if (!gameAreaRef.value) return
-    const areaWidth = gameAreaRef.value.clientWidth
-    const areaHeight = gameAreaRef.value.clientHeight
-    
-    // 初始化擋板與球
-    paddleX.value = areaWidth / 2 - paddleWidth / 2
-    ball.value = { x: areaWidth / 2 - 8, y: areaHeight - 60, vx: 5, vy: -5, size: 16 }
-    
-    // 生成磚塊 (4行 x 6列)
-    blocks.value = []
-    const cols = 6
-    const rows = 4
-    const blockW = (areaWidth - 40) / cols - 10
-    const blockH = 25
-    let id = 0
-    for(let r = 0; r < rows; r++) {
-      for(let c = 0; c < cols; c++) {
-        blocks.value.push({
-          id: id++,
-          x: 20 + c * (blockW + 10),
-          y: 60 + r * (blockH + 10),
-          w: blockW, h: blockH, active: true
-        })
-      }
+    if (!gameAreaRef.value) {
+      console.error('❌ gameAreaRef 未加載，重試中...')
+      setTimeout(() => {
+        if (gameAreaRef.value) {
+          initializeGame()
+          gameLoop()
+        }
+      }, 100)
+      return
     }
-    
+    initializeGame()
     gameLoop()
   })
+}
+
+// ✅ 提取初始化邏輯為獨立方法
+const initializeGame = () => {
+  if (!gameAreaRef.value) return
+  
+  const areaWidth = gameAreaRef.value.clientWidth
+  const areaHeight = gameAreaRef.value.clientHeight
+  
+  // 初始化擋板與球
+  paddleX.value = areaWidth / 2 - paddleWidth / 2
+  ball.value = { x: areaWidth / 2 - 8, y: areaHeight - 60, vx: 5, vy: -5, size: 16 }
+  
+  // 生成磚塊 (4行 x 6列)
+  blocks.value = []
+  const cols = 6
+  const rows = 4
+  const blockW = (areaWidth - 40) / cols - 10
+  const blockH = 25
+  let id = 0
+  for(let r = 0; r < rows; r++) {
+    for(let c = 0; c < cols; c++) {
+      blocks.value.push({
+        id: id++,
+        x: 20 + c * (blockW + 10),
+        y: 60 + r * (blockH + 10),
+        w: blockW, h: blockH, active: true
+      })
+    }
+  }
 }
 
 // 核心物理迴圈

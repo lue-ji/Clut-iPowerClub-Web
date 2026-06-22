@@ -24,22 +24,4 @@ export const stories = [
     date: '2026-05-28',
     featured: true
   },
-  {
-    id: 3,
-    slug: 'weijin-20260528',
-    author: '韋靜',
-    excerpt: '',
-    image: getImage('staff', 'weijin.jpg'),
-    date: '2026-05-28',
-    featured: true
-  },
-  {
-    id: 4,
-    slug: 'chenkie-20260528',
-    author: '宸愷',
-    excerpt: '',
-    image: getImage('staff', 'chenkie.jpg'),
-    date: '2026-05-28',
-    featured: true
-  },
 ]

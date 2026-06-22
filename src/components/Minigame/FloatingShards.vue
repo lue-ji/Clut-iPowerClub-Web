@@ -1,6 +1,18 @@
 <template>
   <div class="game-module-wrapper">
-    <div v-if="gameState === 'playing'" class="game-area game-fade-in">
+    <div v-if="gameState === 'start'" class="screen-content game-fade-in">
+      <div class="badge">STRESS TEST</div>
+      <h2 class="game-title">浮空碎片消除</h2>
+      <p class="game-desc">點擊消除畫面上所有浮空碎片，<br>挑戰你的專注力與反應速度！</p>
+      <div class="btn-group">
+        <button @click="startGameSession" class="action-btn">
+          <i class="fa-solid fa-play"></i> START GAME
+        </button>
+        <button @click="$emit('back')" class="action-btn outline">🔙 返回大廳</button>
+      </div>
+    </div>
+
+    <div v-else-if="gameState === 'playing'" class="game-area game-fade-in">
       <div class="header-overlay">
         <h3>系統減壓模塊</h3>
         <p>點擊消除畫面上的浮空碎片 (剩餘: {{ shards.length }})</p>
@@ -54,7 +66,7 @@ import { ref, onMounted } from 'vue'
 
 defineEmits(['back'])
 
-const gameState = ref('playing')
+const gameState = ref('start') // ✅ 改為 'start' 而不是 'playing'
 const shards = ref([])
 
 const colors = [
@@ -63,9 +75,15 @@ const colors = [
   'rgba(255, 0, 122, 0.4)'   // 粉
 ]
 
+// ✅ 啟動遊戲的方法
+const startGameSession = () => {
+  gameState.value = 'playing'
+  initShards()
+}
+
 // 隨機生成碎片
 const initShards = () => {
-  gameState.value = 'playing'//map reduce
+  gameState.value = 'playing'
   shards.value = Array.from({ length: 30 }).map((_, index) => ({
     id: index,
     x: Math.random() * 80 + 10, // 10% ~ 90%
@@ -93,7 +111,7 @@ const shatter = (shard) => {
 }
 
 onMounted(() => {
-  initShards()
+  // ✅ 不自動初始化，等待用戶點擊 START GAME
 })
 </script>
 

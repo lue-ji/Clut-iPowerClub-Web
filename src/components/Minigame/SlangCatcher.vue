@@ -128,9 +128,18 @@ const startGame = () => {
   fallingItems.value = []
   
   nextTick(() => {
-    if (gameAreaRef.value) {
-      catcherX.value = gameAreaRef.value.clientWidth / 2 - catcherWidth / 2
+    if (!gameAreaRef.value) {
+      console.error('❌gameAreaRef 未加載，重試中...')
+      setTimeout(() => {
+        if (gameAreaRef.value) {
+          catcherX.value = gameAreaRef.value.clientWidth / 2 - catcherWidth / 2
+          gameLoop()
+          startTimer()
+        }
+      }, 100)
+      return
     }
+    catcherX.value = gameAreaRef.value.clientWidth / 2 - catcherWidth / 2
     gameLoop()
     startTimer()
   })
