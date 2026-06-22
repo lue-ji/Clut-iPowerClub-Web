@@ -325,5 +325,73 @@ textarea.text-input { resize: vertical; min-height: 80px; }
 .price-early-bird .amount { font-size: 3.5rem; line-height: 1; }
 .early-bird-tag { display: inline-block; margin-top: 16px; padding: 6px 12px; background: #fff0f0; color: #e53e3e; font-size: 0.85rem; font-weight: 800; border-radius: 999px; position: relative; z-index: 2; animation: pulse-soft 2s infinite; }
 @keyframes pulse-soft { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-@media (max-width: 900px) { .join-layout { grid-template-columns: 1fr; } .fee-amount .number { font-size: 2.8rem; } }
+
+@media (max-width: 900px) {
+  .join-hero {
+    padding: 92px 0 72px;
+  }
+
+  .join-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .benefit-card,
+  .form-card {
+    padding: 18px;
+  }
+
+  .pricing-ticket {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .price-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .price-early-bird .amount {
+    font-size: 2.6rem;
+  }
+
+  .submit-btn {
+    padding: 13px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .join-hero {
+    padding: 80px 0 60px;
+  }
+
+  .hero-title {
+    font-size: clamp(1.9rem, 10vw, 2.5rem);
+  }
+
+  .hero-text {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .benefit-list {
+    gap: 10px;
+  }
+
+  .tech-list li {
+    align-items: flex-start;
+  }
+
+  .upload-placeholder {
+    min-height: 96px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .img-preview {
+    max-height: 200px;
+  }
+}
 </style>

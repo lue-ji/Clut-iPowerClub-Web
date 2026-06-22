@@ -49,6 +49,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: var(--bg);
   color: var(--text);
+  overflow-x: hidden;
 }
 
 a {
@@ -62,7 +63,7 @@ img {
 }
 
 .page {
-  width: min(var(--container), calc(100% - 32px));
+  width: min(var(--container), calc(100% - 20px));
   margin: 0 auto;
 }
 
@@ -239,8 +240,22 @@ img {
     grid-template-columns: 1fr;
   }
 
+  .page {
+    width: min(var(--container), calc(100% - 16px));
+  }
+
   .section {
-    padding: 60px 0;
+    padding: 56px 0;
+  }
+
+  .hero {
+    padding-top: 88px;
+    padding-bottom: 72px;
+  }
+
+  .card,
+  .ip-glass-card {
+    border-radius: 18px;
   }
 }
 
