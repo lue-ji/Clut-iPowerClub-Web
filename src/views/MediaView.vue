@@ -1,5 +1,18 @@
 <script setup>
+import { ref } from 'vue'
 import IgQrCard from '@/components/IgQrCard.vue'
+
+// ✅ Instagram 官方動態（易於後續擴展）
+const officialReels = ref([
+  {id: 'DPn4T-kjyzJ',title: 'iPower 官方貼文',},
+  {id: 'DY7IFmpPo9E',title: '致理iPower星光解題班宣傳',},
+])
+
+// ✅ 歡樂狼窩動態
+const wolvesReels = ref([
+  {id: 'DXd_30uERD8',title: '歡樂狼窩宣傳',},
+  {id: 'DXiKKLyktY1',title: '歡樂狼窩日常',},
+])
 </script>
 
 <template>
@@ -14,7 +27,7 @@ import IgQrCard from '@/components/IgQrCard.vue'
       <div class="page">
         <div class="section-title-wrap">
           <span class="section-emoji">🎬</span>
-          <h2>iPower 官方影音回顧</h2>
+          <h2>iPower官方影音回顧</h2>
           <p>揮灑汗水的大型企劃、溫馨的志工服務與日常點滴</p>
           <a
             href="https://www.instagram.com/clut_ipower/"
@@ -31,7 +44,7 @@ import IgQrCard from '@/components/IgQrCard.vue'
             <div class="video-container-16by9">
               <iframe
                 src="https://www.youtube.com/embed/_HbfiDjQdn0?autoplay=0&rel=0"
-                title="iPower 大型活動回顧"
+                title="iPower大型活動回顧-復活節特輯"
                 frameborder="0"
                 allowfullscreen
               ></iframe>
@@ -41,7 +54,7 @@ import IgQrCard from '@/components/IgQrCard.vue'
             <div class="video-container-16by9">
               <iframe
                 src="https://www.youtube.com/embed/GHRdj-sCXZA?autoplay=0&rel=0"
-                title="YouTube video player"
+                title="iPower解題班-願景"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
@@ -52,7 +65,7 @@ import IgQrCard from '@/components/IgQrCard.vue'
             <div class="video-container-16by9">
               <iframe
                 src="https://www.youtube.com/embed/2B9d4S95mls?autoplay=0&rel=0"
-                title="YouTube video player"
+                title="iPower解題班-成長故事"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
@@ -63,7 +76,29 @@ import IgQrCard from '@/components/IgQrCard.vue'
             <div class="video-container-16by9">
               <iframe
                 src="https://www.youtube.com/embed/o4Hyv8y8Elw?autoplay=0&rel=0"
-                title="YouTube video player"
+                title="iPower2025夢想特務-工作坊宣傳"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+          <div class="ip-video-wrapper yt-wrapper">
+            <div class="video-container-16by9">
+              <iframe
+                src="https://www.youtube.com/embed/AtcC44T3hLo?autoplay=0&rel=0"
+                title="iPower解題班-領袖學院宣傳"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+          <div class="ip-video-wrapper yt-wrapper">
+            <div class="video-container-16by9">
+              <iframe
+                src="https://www.youtube.com/embed/nYb49yAS108?autoplay=0&rel=0"
+                title="iPower偏鄉服務-雲林石龜-EQ營1"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
@@ -83,19 +118,17 @@ import IgQrCard from '@/components/IgQrCard.vue'
             </div>
             <IgQrCard variant="panel" hint="掃碼追蹤 @clut_ipower" class="media-ig-qr" />
           </div>
-          <div class="ig-embed-panel">
-            <div class="ip-video-wrapper ig-embed-card">
+          <!-- ✅ 官方動態網格（響應式 3 列 → 2 列 → 1 列） -->
+          <div class="grid grid-3 ig-grid-responsive">
+            <div
+              v-for="reel in officialReels"
+              :key="reel.id"
+              class="ip-video-wrapper ig-embed-card"
+            >
               <div class="video-container-9by16">
                 <iframe
-                  src="https://www.instagram.com/p/DPn4T-kjyzJ/embed"
-                  title="iPower 官方貼文"
-                  frameborder="0"
-                  scrolling="no"
-                  allowtransparency="true"
-                ></iframe>
-                <iframe
-                  src="https://www.instagram.com/p/DY7IFmpPo9E/embed"
-                  title="致理iPower最新活動"
+                  :src="`https://www.instagram.com/p/${reel.id}/embed`"
+                  :title="reel.title"
                   frameborder="0"
                   scrolling="no"
                   allowtransparency="true"
@@ -123,23 +156,17 @@ import IgQrCard from '@/components/IgQrCard.vue'
           </a>
         </div>
 
-        <div class="grid grid-2 ig-grid-balanced">
-          <div class="ip-video-wrapper ig-embed-card">
+        <!-- ✅ 狼窩動態網格（響應式 3 列 → 2 列 → 1 列） -->
+        <div class="grid grid-3 ig-grid-responsive">
+          <div
+            v-for="reel in wolvesReels"
+            :key="reel.id"
+            class="ip-video-wrapper ig-embed-card"
+          >
             <div class="video-container-9by16">
               <iframe
-                src="https://www.instagram.com/p/DXd_30uERD8/embed"
-                title="歡樂狼窩宣傳"
-                frameborder="0"
-                scrolling="no"
-                allowtransparency="true"
-              ></iframe>
-            </div>
-          </div>
-          <div class="ip-video-wrapper ig-embed-card">
-            <div class="video-container-9by16">
-              <iframe
-                src="https://www.instagram.com/p/DXiKKLyktY1/embed"
-                title="歡樂狼窩日常"
+                :src="`https://www.instagram.com/p/${reel.id}/embed`"
+                :title="reel.title"
                 frameborder="0"
                 scrolling="no"
                 allowtransparency="true"
@@ -224,7 +251,7 @@ import IgQrCard from '@/components/IgQrCard.vue'
 
 .ig-showcase {
   margin-top: 56px;
-  padding: 32px 28px 36px;
+  padding: 32px 28px 40px;
   border-radius: var(--radius-lg);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(237, 243, 248, 0.85) 100%);
   border: 1px solid var(--border);
@@ -288,13 +315,42 @@ import IgQrCard from '@/components/IgQrCard.vue'
 
 .ig-embed-card {
   width: 100%;
-  max-width: 340px;
-  margin: 0 auto;
   border-radius: var(--radius-md);
   overflow: hidden;
   background: #fff;
   border: 1px solid var(--border);
   box-shadow: 0 8px 24px rgba(16, 34, 53, 0.06);
+  transition: all 0.3s ease;
+}
+
+.ig-embed-card:hover {
+  box-shadow: 0 12px 32px rgba(16, 34, 53, 0.12);
+  transform: translateY(-4px);
+}
+
+/* ✅ 響應式網格：3列 → 2列 → 1列 */
+.ig-grid-responsive {
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .ig-grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .ig-grid-responsive {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .ig-embed-card {
+    max-width: 360px;
+    margin: 0 auto;
+  }
 }
 
 .ig-grid-balanced {
