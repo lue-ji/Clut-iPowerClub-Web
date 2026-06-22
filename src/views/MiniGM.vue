@@ -27,7 +27,7 @@
           </div>
 
           <div class="game-card active" @click="activeGame = 'contextRicochet'">
-            <div class="icon">🧱</div>
+            <div class="icon">🎯</div>
             <h3>詞意彈射賽</h3>
             <p>物理碰撞運算測試</p>
             <div class="status highlight">可遊玩</div>
