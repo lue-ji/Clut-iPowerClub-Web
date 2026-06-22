@@ -104,7 +104,7 @@ import { ref, computed } from 'vue'
 import viceImg from '@/assets/staff/vice.jpg'
 import presidentImg from '@/assets/staff/president.jpg'
 import activityImg from '@/assets/staff/activity.jpg'
-import lightimg from '@/assets/staff/light.jpg'
+import socteach from '@/assets/staff/SocTeach.png'
 
 const defaultAvatar = 'https://i.pravatar.cc/150'
 
@@ -152,7 +152,7 @@ const staffList = ref([
   {
     name: '李曉光',
     role: '社團顧問',
-    avatar: lightimg,
+    avatar: socteach,
     tags: ['陪伴成長', '方向引導', '經驗分享'],
     duty: '陪伴社團成長，提供方向與建議',
     desc: '透過經驗與觀點陪伴團隊前進，在需要的時候給予支持與提醒。',

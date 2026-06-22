@@ -2,7 +2,7 @@
   <section class="section not-found">
     <div class="page text-center">
       <p class="code">404</p>
-      <h1>找不到這個頁面</h1>
+      <h1>未找到這個頁面</h1>
       <p class="hint">網址可能已變更，或該頁面不存在。</p>
       <div class="actions">
         <router-link to="/" class="btn">回到首頁</router-link>

@@ -2,18 +2,9 @@
 import igQrImg from '@/assets/social/ig-qrcode.png'
 
 defineProps({
-  variant: {
-    type: String,
-    default: 'default',
-  },
-  hint: {
-    type: String,
-    default: '',
-  },
-  showCaption: {
-    type: Boolean,
-    default: true,
-  },
+  variant: { type: String, default: 'default',},
+  hint: { type: String, default: '',},
+  showCaption: { type: Boolean, default: true,},
 })
 
 const IG_URL = 'https://www.instagram.com/clut_ipower/'
