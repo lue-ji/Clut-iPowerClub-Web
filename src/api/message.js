@@ -52,10 +52,14 @@ export const getMessages = async () => {
 
 export const postMessage = async (data) => {
   try {
+    const body = new URLSearchParams()
+    Object.entries(data).forEach(([k, v]) => {
+      body.append(k, v ?? '')
+    })
+
     const res = await fetchOnce(BASE, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body,
     })
 
     const result = await res.json()

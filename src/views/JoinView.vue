@@ -112,8 +112,8 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { postMessage } from '../api/message'
-import Swal from 'sweetalert2' 
+import Swal from 'sweetalert2'
+import { postMessage } from '../api/message' // 你的新 postMessage，使用 URLSearchParams
 
 const form = ref({ name: '', department: '', contact: '', text: '', image: '' })
 const imagePreview = ref(null)
@@ -161,23 +161,44 @@ const handleFileChange = (e) => {
 const removeImage = () => {
   imagePreview.value = null
   form.value.image = ''
-  document.getElementById('file-input').value = ''
+  const input = document.getElementById('file-input')
+  if (input) input.value = ''
+}
+
+// 清楚判斷 type
+const computeType = () => {
+  return (form.value.text || form.value.image) ? 'story' : 'join'
 }
 
 const submitForm = async () => {
   try {
     loading.value = true
     error.value = null
+
     const token = import.meta.env.VITE_JOIN_FORM_TOKEN
     if (!token) {
       throw new Error('系統尚未設定報名驗證，請稍後再試或聯繫幹部。')
     }
 
-    const result = await postMessage({
+    // 基本前端驗證（和 GAS 的檢查保持一致）
+    if (!form.value.name || !form.value.contact) {
+      throw new Error('請填寫稱呼與聯絡方式。')
+    }
+    if (form.value.name.length > 15) {
+      throw new Error('稱呼請小於 15 字。')
+    }
+    if (form.value.text && form.value.text.length > 60) {
+      throw new Error('內容請小於 60 字。')
+    }
+
+    // 整理要送出的資料（不設定 Content-Type，使用 URLSearchParams 在 postMessage 處理）
+    const payload = {
       ...form.value,
       token,
-      type: form.value.text || form.value.image ? 'story' : 'join',
-    })
+      type: computeType(),
+    }
+
+    const result = await postMessage(payload)
 
     if (result.status === 'success') {
       submitted.value = true
@@ -185,15 +206,18 @@ const submitForm = async () => {
         title: '🎉 權限開通申請成功！',
         text: '已收到您的檔案，近期會再透過IG或Line與你聯繫~~~',
         icon: 'success',
-        confirmButtonColor: '#234d74', 
+        confirmButtonColor: '#234d74',
         confirmButtonText: 'Fantastic!',
         background: 'rgba(255, 255, 255, 0.9)',
-        backdrop: `rgba(9, 19, 33, 0.6)` 
+        backdrop: `rgba(9, 19, 33, 0.6)`
       })
 
       form.value = { name: '', department: '', contact: '', text: '', image: '' }
       imagePreview.value = null
-      document.getElementById('file-input').value = ''
+      const input = document.getElementById('file-input')
+      if (input) input.value = ''
+    } else {
+      throw new Error(result.message || '送出失敗')
     }
   } catch (err) {
     error.value = err.message || '送出失敗，請稍後再試。'
