@@ -27,7 +27,7 @@
             每一次活動不是單純的節目，而是一個讓你看見「我可以比我想像中更有影響力」的練習場。從迎新、跨校協作、微笑營會到短劇展演，我們相信，真實的力量來自於「我」成為「我們」之後的增幅。
           </p>
         </div>
-        
+
         <div class="image-wrapper fade-in">
           <img src="@/assets/pub/remind.jpg" alt="團隊合作" class="about-img" />
         </div>
@@ -82,7 +82,7 @@
             <h3>扎根校園</h3>
             <p class="desc">透過例行社課與小型專案，為社員打下紮實的企劃與溝通基礎，建立像家一樣的歸屬感。</p>
           </div>
-          
+
           <div class="card ip-glass-card fade-in">
             <div class="vision-icon">🤝</div>
             <h3>跨校連結</h3>
@@ -198,7 +198,6 @@ function triggerPrinciple(index, event) {
 let ctx = null
 let particles = []
 let animationId = null
-  let containerEl = null
 const mouse = { x: -9999, y: -9999 }
 
 function rand(min, max) { return Math.random() * (max - min) + min }
@@ -294,7 +293,6 @@ onMounted(() => {
   if (!c) return
   ctx = c.getContext('2d')
   // full-page background: use viewport size and window events
-  containerEl = document.body
 
   resizeCanvas()
   initParticles(c.width / (window.devicePixelRatio || 1), c.height / (window.devicePixelRatio || 1))

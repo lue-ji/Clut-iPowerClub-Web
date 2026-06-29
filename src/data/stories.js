@@ -4,7 +4,7 @@ import logoPng from '@/../logo.png'
 const imgmap = eventload()
 const getImage = (folder, file) => imgmap[folder]?.find(i => i.name === file)?.url || logoPng
 
-// 精簡版 stories 結構：只保留必要欄位，方便在 About 頁簡單渲染
+// 精簡結構
 export const stories = [
   {
     id: 1,

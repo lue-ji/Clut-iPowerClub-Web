@@ -5,12 +5,12 @@
     <div class="neon-orb orb-3"></div>
 
     <main class="glass-board">
-      
+
       <div v-if="activeGame === 'menu'" class="hub-menu game-fade-in">
         <div class="badge">MINIGAME LAB</div>
         <h1 class="hub-title">選擇測試模塊</h1>
         <p class="hub-desc">請選擇您要進行互動測試的系統模塊。</p>
-        
+
         <div class="game-cards-container">
           <div class="game-card active" @click="activeGame = 'floatingShards'">
             <div class="icon">✨</div>
@@ -39,7 +39,7 @@
             <div class="status highlight">可遊玩</div>
           </div>
         </div>
-        
+
         <router-link to="/events" class="back-link">🔙 返回活動總覽</router-link>
       </div>
 
@@ -141,7 +141,7 @@ const activeGame = ref('menu')
 
 .active-game-container :deep(.game-area) {
   flex: 1;
-  display: flex; 
+  display: flex;
   flex-direction: column;
 }
 

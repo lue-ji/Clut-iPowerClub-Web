@@ -2,7 +2,7 @@ import { eventload } from '@/utils/imgloader'
 import logoPng from '@/../logo.png'
 const imgmap = eventload()
 export const getImage = (folder, fileName) => {
-  // 若找不到對應圖片，回傳預設 logo（避免空 src 導致壞圖）
+  // 若找不到對應圖片，return預設logo(避免空src導致壞圖)
   return imgmap[folder]?.find(img => img.name === fileName)?.url || logoPng
 }
 //helper
@@ -124,7 +124,7 @@ export const events = [
 不是比誰對，而是學會一起回家。邀請你，一起來聽見這個家的故事！
 
 【活動資訊】
-📍 演出地點：iPower 關懷中心 (新北市永和區成功路一段82號9樓)
+📍 演出地點：iPower關懷中心(新北市永和區成功路一段82號9樓)
 🕒 演出時間：2026/5/10 (日) 9:40入場，10:00開演`,
     image: getImage('latest', '32call.jpg'), 
     gallery: [], 

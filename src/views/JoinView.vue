@@ -14,7 +14,7 @@
 
     <section class="section ip-bg-soft">
       <div class="page join-layout">
-        
+
         <div class="card ip-glass-card benefit-card fade-in">
           <span class="ip-badge tech-highlight">UNLOCKED PRIVILEGES</span>
           <h2 class="tech-heading">已解鎖的核心權限</h2>
@@ -35,7 +35,7 @@
             <div class="ticket-watermark watermark-2">✨</div>
 
             <p class="pricing-label">當前系統開通費用</p>
-            
+
             <div class="price-display">
               <div class="price-original">
                 <span>原價</span>
@@ -46,7 +46,7 @@
                 <span class="amount">{{ currentFee }}</span>
               </div>
             </div>
-           
+
             <div class="early-bird-tag" v-if="isEarlyBird">
               🔥 早鳥優惠熱烈開放中，先搶先贏！
             </div>
@@ -83,13 +83,14 @@
             <div class="field">
               <label>上傳個人識別影像 (選填)</label>
               <div class="image-upload-wrap">
-                <input type="file" accept="image/* "@change="handleFileChange" id="file-input" class="file-input" />
+                <input type="file" accept="image/*" @change="handleFileChange" id="file-input" class="file-input" />
                 <div v-if="imagePreview" class="preview-box">
                   <img :src="imagePreview" class="img-preview" />
                   <button type="button" @click="removeImage" class="remove-btn">✕</button>
                 </div>
                 <label v-else for="file-input" class="upload-placeholder">
                   <span>📸 點擊拍照或選擇照片</span>
+                  <small>（大於 2MB 會自動壓縮）</small>
                 </label>
               </div>
             </div>
@@ -143,19 +144,99 @@ onUnmounted(() => clearInterval(timerId))
 
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024
 
-const handleFileChange = (e) => {
+// 圖片壓縮函數
+const compressImage = (file, maxWidth = 800, quality = 0.7) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let width = img.width
+        let height = img.height
+
+        // 計算壓縮後的尺寸
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width
+          width = maxWidth
+        }
+
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, width, height)
+
+        // 壓縮並轉為 base64
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob)
+            } else {
+              reject(new Error('圖片壓縮失敗'))
+            }
+          },
+          'image/jpeg',
+          quality
+        )
+      }
+      img.onerror = () => reject(new Error('圖片載入失敗'))
+      img.src = e.target.result
+    }
+    reader.onerror = () => reject(new Error('檔案讀取失敗'))
+    reader.readAsDataURL(file)
+  })
+}
+
+const handleFileChange = async (e) => {
   const file = e.target.files[0]
   if (!file) return
-  if (file.size > MAX_IMAGE_BYTES) {
-    error.value = '圖片請小於 2MB，請換一張再試。'
-    e.target.value = ''
-    return
-  }
+
   error.value = null
-  imagePreview.value = URL.createObjectURL(file)
-  const reader = new FileReader()
-  reader.onload = (res) => { form.value.image = res.target.result }
-  reader.readAsDataURL(file)
+
+  try {
+    // 如果圖片小於 2MB，直接使用
+    if (file.size <= MAX_IMAGE_BYTES) {
+      imagePreview.value = URL.createObjectURL(file)
+      const reader = new FileReader()
+      reader.onload = (res) => { form.value.image = res.target.result }
+      reader.readAsDataURL(file)
+      return
+    }
+
+    // 如果圖片超過 2MB，進行壓縮
+    loading.value = true
+    error.value = '圖片壓縮中...'
+
+    const compressedBlob = await compressImage(file, 800, 0.7)
+
+    // 檢查壓縮後是否還是太大
+    if (compressedBlob.size > MAX_IMAGE_BYTES) {
+      // 如果還是太大，進一步降低品質
+      const highlyCompressedBlob = await compressImage(file, 600, 0.5)
+      if (highlyCompressedBlob.size > MAX_IMAGE_BYTES) {
+        error.value = '圖片過大，無法壓縮到 2MB 以下，請選擇其他圖片。'
+        e.target.value = ''
+        loading.value = false
+        return
+      }
+      imagePreview.value = URL.createObjectURL(highlyCompressedBlob)
+      const reader = new FileReader()
+      reader.onload = (res) => { form.value.image = res.target.result }
+      reader.readAsDataURL(highlyCompressedBlob)
+    } else {
+      imagePreview.value = URL.createObjectURL(compressedBlob)
+      const reader = new FileReader()
+      reader.onload = (res) => { form.value.image = res.target.result }
+      reader.readAsDataURL(compressedBlob)
+    }
+
+    error.value = null
+  } catch (err) {
+    error.value = '圖片處理失敗：' + err.message
+    e.target.value = ''
+  } finally {
+    loading.value = false
+  }
 }
 
 const removeImage = () => {
@@ -327,8 +408,9 @@ const submitForm = async () => {
 .text-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(35, 77, 116, 0.08); }
 textarea.text-input { resize: vertical; min-height: 80px; }
 .file-input { display: none; }
-.upload-placeholder { display: flex; min-height: 110px; border: 2px dashed rgba(0,0,0,0.15); border-radius: 12px; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); background: rgba(255,255,255,0.6); transition: all 0.2s; }
+.upload-placeholder { display: flex; flex-direction: column; min-height: 110px; border: 2px dashed rgba(0,0,0,0.15); border-radius: 12px; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); background: rgba(255,255,255,0.6); transition: all 0.2s; }
 .upload-placeholder:hover { border-color: var(--primary); color: var(--primary); }
+.upload-placeholder small { margin-top: 8px; font-size: 0.8rem; color: #94a3b8; }
 .preview-box { position: relative; width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
 .img-preview { width: 100%; height: auto; display: block; max-height: 250px; object-fit: cover; }
 .remove-btn { position: absolute; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.6); color: white; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }

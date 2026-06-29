@@ -18,7 +18,7 @@ const routes = [
   // add:知識庫/資源中心route
   { path: '/resources', component: () => import('../views/ResourceView.vue') },
   { path: '/media', component: () => import('../views/MediaView.vue') },
-  // add:Minigame&遊戲實驗室route (-->lazy-loading)
+  // add:Minigame&遊戲實驗室route (lazy-loading)
   { path: '/minigame', component: () => import('../views/MiniGM.vue') },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('../views/NotFoundView.vue') },
 ]

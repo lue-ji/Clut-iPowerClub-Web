@@ -1,6 +1,6 @@
 import logoPng from '@/../logo.png'
 
-/** 微笑牆 API 離線時的備用資料（欄位需與 GAS 回傳一致：name / text / time / image） */
+//備用資料(name / text / time / image)
 export const smileWallFallback = [
   {
     name: '婉媚',
