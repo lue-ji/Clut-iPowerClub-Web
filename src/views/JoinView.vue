@@ -77,7 +77,8 @@
 
             <div class="field">
               <label>想對核心團隊說的話 (選填)</label>
-              <textarea class="text-input" v-model="form.text" placeholder="分享一下剛才玩小遊戲的心得，或是對社團的期待吧！" rows="3"></textarea>
+              <textarea class="text-input" v-model="form.text" placeholder="分享一下剛才玩小遊戲的心得，或是對社團的期待吧！"
+                rows="3"></textarea>
             </div>
 
             <div class="field">
@@ -116,7 +117,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import Swal from 'sweetalert2'
 import { postMessage } from '../api/message' // 你的新 postMessage，使用 URLSearchParams
 
-const form = ref({ name: '', department: '', contact: '', text: '', image: '' })
+const form = ref({ name: '', department: '', contact: '', text: '', image: '', imageName: '' })
 const imagePreview = ref(null)
 const submitted = ref(false)
 const loading = ref(false)
@@ -142,10 +143,19 @@ onMounted(() => {
 })
 onUnmounted(() => clearInterval(timerId))
 
-const MAX_IMAGE_BYTES = 2 * 1024 * 1024
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024
+
+const readBlobAsDataURL = (blob) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (event) => resolve(event.target.result)
+    reader.onerror = () => reject(new Error('檔案讀取失敗'))
+    reader.readAsDataURL(blob)
+  })
+}
 
 // 圖片壓縮函數
-const compressImage = (file, maxWidth = 800, quality = 0.7) => {
+const compressImage = (file, maxWidth = 1200, quality = 0.7) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = (e) => {
@@ -166,7 +176,6 @@ const compressImage = (file, maxWidth = 800, quality = 0.7) => {
         const ctx = canvas.getContext('2d')
         ctx.drawImage(img, 0, 0, width, height)
 
-        // 壓縮並轉為 base64
         canvas.toBlob(
           (blob) => {
             if (blob) {
@@ -194,45 +203,40 @@ const handleFileChange = async (e) => {
   error.value = null
 
   try {
-    // 如果圖片小於 2MB，直接使用
-    if (file.size <= MAX_IMAGE_BYTES) {
-      imagePreview.value = URL.createObjectURL(file)
-      const reader = new FileReader()
-      reader.onload = (res) => { form.value.image = res.target.result }
-      reader.readAsDataURL(file)
+    form.value.imageName = file.name || `photo_${Date.now()}.jpg`
+
+    if (!file.type.startsWith('image/')) {
+      throw new Error('請選擇有效的圖片檔案')
+    }
+
+    const fileToUse = file.size <= MAX_IMAGE_BYTES ? file : await compressImage(file, 1600, 0.8)
+
+    if (fileToUse.size > MAX_IMAGE_BYTES) {
+      const secondPass = await compressImage(file, 1200, 0.7)
+      if (secondPass.size > MAX_IMAGE_BYTES) {
+        const finalPass = await compressImage(file, 900, 0.6)
+        if (finalPass.size > MAX_IMAGE_BYTES) {
+          throw new Error('照片仍太大，請選擇較小的圖片或再拍一張更小的照片')
+        }
+        imagePreview.value = URL.createObjectURL(finalPass)
+        form.value.image = await readBlobAsDataURL(finalPass)
+        form.value.imageName = finalPass.name || form.value.imageName
+        return
+      }
+      imagePreview.value = URL.createObjectURL(secondPass)
+      form.value.image = await readBlobAsDataURL(secondPass)
+      form.value.imageName = secondPass.name || form.value.imageName
       return
     }
 
-    // 如果圖片超過 2MB，進行壓縮
-    loading.value = true
-    error.value = '圖片壓縮中...'
-
-    const compressedBlob = await compressImage(file, 800, 0.7)
-
-    // 檢查壓縮後是否還是太大
-    if (compressedBlob.size > MAX_IMAGE_BYTES) {
-      // 如果還是太大，進一步降低品質
-      const highlyCompressedBlob = await compressImage(file, 600, 0.5)
-      if (highlyCompressedBlob.size > MAX_IMAGE_BYTES) {
-        error.value = '圖片過大，無法壓縮到 2MB 以下，請選擇其他圖片。'
-        e.target.value = ''
-        loading.value = false
-        return
-      }
-      imagePreview.value = URL.createObjectURL(highlyCompressedBlob)
-      const reader = new FileReader()
-      reader.onload = (res) => { form.value.image = res.target.result }
-      reader.readAsDataURL(highlyCompressedBlob)
-    } else {
-      imagePreview.value = URL.createObjectURL(compressedBlob)
-      const reader = new FileReader()
-      reader.onload = (res) => { form.value.image = res.target.result }
-      reader.readAsDataURL(compressedBlob)
-    }
-
-    error.value = null
+    imagePreview.value = URL.createObjectURL(fileToUse)
+    form.value.image = await readBlobAsDataURL(fileToUse)
+    form.value.imageName = fileToUse.name || form.value.imageName
   } catch (err) {
-    error.value = '圖片處理失敗：' + err.message
+    error.value = '圖片處理失敗：' + (err.message || '請重新選擇圖片') + '，您仍可繼續送出。'
+    imagePreview.value = null
+    form.value.image = ''
+    form.value.imageName = ''
     e.target.value = ''
   } finally {
     loading.value = false
@@ -242,6 +246,7 @@ const handleFileChange = async (e) => {
 const removeImage = () => {
   imagePreview.value = null
   form.value.image = ''
+  form.value.imageName = ''
   const input = document.getElementById('file-input')
   if (input) input.value = ''
 }
@@ -293,7 +298,7 @@ const submitForm = async () => {
         backdrop: `rgba(9, 19, 33, 0.6)`
       })
 
-      form.value = { name: '', department: '', contact: '', text: '', image: '' }
+      form.value = { name: '', department: '', contact: '', text: '', image: '', imageName: '' }
       imagePreview.value = null
       const input = document.getElementById('file-input')
       if (input) input.value = ''
@@ -360,6 +365,7 @@ const submitForm = async () => {
   align-items: center;
   gap: 10px;
 }
+
 .check-icon {
   color: #10b981;
   font-size: 1.1rem;
@@ -376,61 +382,348 @@ const submitForm = async () => {
 }
 
 @keyframes pulseTech {
-  0% { box-shadow: 0 0 15px rgba(35, 77, 116, 0.4); }
-  50% { box-shadow: 0 0 25px rgba(34, 211, 238, 0.6); transform: scale(1.02); }
-  100% { box-shadow: 0 0 15px rgba(35, 77, 116, 0.4); }
+  0% {
+    box-shadow: 0 0 15px rgba(35, 77, 116, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(34, 211, 238, 0.6);
+    transform: scale(1.02);
+  }
+
+  100% {
+    box-shadow: 0 0 15px rgba(35, 77, 116, 0.4);
+  }
 }
 
 /* 數字顯示強化 */
-.price-early-bird .amount, .price-early-bird .currency, .strike-through {
+.price-early-bird .amount,
+.price-early-bird .currency,
+.strike-through {
   font-family: 'Share Tech Mono', monospace;
 }
 
 /* --- 原本的樣式 (保留你原有的設定) --- */
-.join-hero { position: relative; background: #091321; color: white; padding: 100px 0; overflow: hidden; text-align: center; }
-.ambient-glow { position: absolute; border-radius: 50%; filter: blur(100px); z-index: 1; opacity: 0.5; }
-.glow-1 { width: 400px; height: 400px; background: rgba(45, 212, 191, 0.3); top: -10%; left: -5%; }
-.glow-2 { width: 350px; height: 350px; background: rgba(35, 77, 116, 0.6); bottom: -10%; right: -5%; }
-.relative-z { position: relative; z-index: 2; }
-.hero-badge { display: inline-block; padding: 8px 16px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); font-size: 0.9rem; font-weight: 700; margin-bottom: 16px;}
-.hero-title { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; margin-bottom: 20px; }
-.hero-text { font-size: 1.15rem; color: rgba(255, 255, 255, 0.85); line-height: 1.6; }
+.join-hero {
+  position: relative;
+  background: #091321;
+  color: white;
+  padding: 100px 0;
+  overflow: hidden;
+  text-align: center;
+}
 
-.join-layout { display: grid; grid-template-columns: 1fr 1.1fr; gap: 40px; align-items: start; }
-.benefit-card h2, .form-head h2 { margin: 16px 0 14px; color: var(--primary-dark); font-size: 1.7rem; }
-.benefit-list { margin: 20px 0; padding-left: 0; list-style: none; display: grid; gap: 12px; line-height: 1.9; color: var(--muted); }
+.ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 1;
+  opacity: 0.5;
+}
 
-.form-head p { color: var(--muted); line-height: 1.8; }
-.join-form { margin-top: 18px; }
-.field { margin-bottom: 14px; }
-.field label { display: block; margin-bottom: 8px; color: var(--primary-dark); font-weight: 700; font-size: 0.95rem; }
-.text-input { width: 100%; padding: 13px 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.8); color: var(--text); outline: none; transition: all 0.2s; font-family: inherit; }
-.text-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(35, 77, 116, 0.08); }
-textarea.text-input { resize: vertical; min-height: 80px; }
-.file-input { display: none; }
-.upload-placeholder { display: flex; flex-direction: column; min-height: 110px; border: 2px dashed rgba(0,0,0,0.15); border-radius: 12px; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); background: rgba(255,255,255,0.6); transition: all 0.2s; }
-.upload-placeholder:hover { border-color: var(--primary); color: var(--primary); }
-.upload-placeholder small { margin-top: 8px; font-size: 0.8rem; color: #94a3b8; }
-.preview-box { position: relative; width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
-.img-preview { width: 100%; height: auto; display: block; max-height: 250px; object-fit: cover; }
-.remove-btn { position: absolute; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.6); color: white; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.submit-btn { width: 100%; margin-top: 10px; color: white; padding: 14px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; transition: 0.2s;}
-.error { color: #c0392b; margin-top: 12px; font-size: 0.95rem; }
-.success { margin-top: 20px; color: #1f7a43; font-weight: 700; text-align: center; }
+.glow-1 {
+  width: 400px;
+  height: 400px;
+  background: rgba(45, 212, 191, 0.3);
+  top: -10%;
+  left: -5%;
+}
 
-.pricing-ticket { margin-top: 30px; padding: 24px; background: linear-gradient(135deg, #f8fbff 0%, #e2eef9 100%); border: 1px solid #cce0f5; border-radius: 20px; position: relative; box-shadow: 0 8px 24px rgba(23, 50, 76, 0.06); }
-.relative-overflow { position: relative; overflow: hidden; }
-.ticket-watermark { position: absolute; font-size: 6rem; opacity: 0.04; right: -10px; bottom: -20px; transform: rotate(-15deg); pointer-events: none; }
-.watermark-2 { font-size: 3rem; top: 10px; left: 10px; opacity: 0.05; transform: rotate(20deg); }
-.pricing-label { color: var(--muted); font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; position: relative; z-index: 2; }
-.price-display { display: flex; align-items: baseline; gap: 16px; position: relative; z-index: 2; }
-.price-original { display: flex; flex-direction: column; color: #94a3b8; font-size: 0.9rem; font-weight: 600; }
-.strike-through { text-decoration: line-through; font-size: 1.1rem; }
-.price-early-bird { color: #e53e3e; font-weight: 900; }
-.price-early-bird .currency { font-size: 1.5rem; margin-right: 2px; }
-.price-early-bird .amount { font-size: 3.5rem; line-height: 1; }
-.early-bird-tag { display: inline-block; margin-top: 16px; padding: 6px 12px; background: #fff0f0; color: #e53e3e; font-size: 0.85rem; font-weight: 800; border-radius: 999px; position: relative; z-index: 2; animation: pulse-soft 2s infinite; }
-@keyframes pulse-soft { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+.glow-2 {
+  width: 350px;
+  height: 350px;
+  background: rgba(35, 77, 116, 0.6);
+  bottom: -10%;
+  right: -5%;
+}
+
+.relative-z {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900;
+  margin-bottom: 20px;
+}
+
+.hero-text {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+}
+
+.join-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.benefit-card h2,
+.form-head h2 {
+  margin: 16px 0 14px;
+  color: var(--primary-dark);
+  font-size: 1.7rem;
+}
+
+.benefit-list {
+  margin: 20px 0;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+  line-height: 1.9;
+  color: var(--muted);
+}
+
+.form-head p {
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.join-form {
+  margin-top: 18px;
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.text-input {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--text);
+  outline: none;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.text-input:focus {
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(35, 77, 116, 0.08);
+}
+
+textarea.text-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.file-input {
+  display: none;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  min-height: 110px;
+  border: 2px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.6);
+  transition: all 0.2s;
+}
+
+.upload-placeholder:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.upload-placeholder small {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.preview-box {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.img-preview {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 250px;
+  object-fit: cover;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit-btn {
+  width: 100%;
+  margin-top: 10px;
+  color: white;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.error {
+  color: #c0392b;
+  margin-top: 12px;
+  font-size: 0.95rem;
+}
+
+.success {
+  margin-top: 20px;
+  color: #1f7a43;
+  font-weight: 700;
+  text-align: center;
+}
+
+.pricing-ticket {
+  margin-top: 30px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fbff 0%, #e2eef9 100%);
+  border: 1px solid #cce0f5;
+  border-radius: 20px;
+  position: relative;
+  box-shadow: 0 8px 24px rgba(23, 50, 76, 0.06);
+}
+
+.relative-overflow {
+  position: relative;
+  overflow: hidden;
+}
+
+.ticket-watermark {
+  position: absolute;
+  font-size: 6rem;
+  opacity: 0.04;
+  right: -10px;
+  bottom: -20px;
+  transform: rotate(-15deg);
+  pointer-events: none;
+}
+
+.watermark-2 {
+  font-size: 3rem;
+  top: 10px;
+  left: 10px;
+  opacity: 0.05;
+  transform: rotate(20deg);
+}
+
+.pricing-label {
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.price-display {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.price-original {
+  display: flex;
+  flex-direction: column;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.strike-through {
+  text-decoration: line-through;
+  font-size: 1.1rem;
+}
+
+.price-early-bird {
+  color: #e53e3e;
+  font-weight: 900;
+}
+
+.price-early-bird .currency {
+  font-size: 1.5rem;
+  margin-right: 2px;
+}
+
+.price-early-bird .amount {
+  font-size: 3.5rem;
+  line-height: 1;
+}
+
+.early-bird-tag {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 6px 12px;
+  background: #fff0f0;
+  color: #e53e3e;
+  font-size: 0.85rem;
+  font-weight: 800;
+  border-radius: 999px;
+  position: relative;
+  z-index: 2;
+  animation: pulse-soft 2s infinite;
+}
+
+@keyframes pulse-soft {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
 
 @media (max-width: 900px) {
   .join-hero {

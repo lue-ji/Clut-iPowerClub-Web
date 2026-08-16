@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import IgQrCard from '@/components/IgQrCard.vue'
 
-// ✅ Instagram 官方動態（易於後續擴展）
+// ✅ Instagram官方動態(易擴展)
 const officialReels = ref([
   {id: 'DPn4T-kjyzJ',title: 'iPower 官方貼文',},
   {id: 'DY7IFmpPo9E',title: '致理iPower星光解題班宣傳',},
@@ -13,6 +13,8 @@ const wolvesReels = ref([
   {id: 'DXd_30uERD8',title: '歡樂狼窩宣傳',},
   {id: 'DXiKKLyktY1',title: '歡樂狼窩日常',},
 ])
+//後續其他小組動態可放置於下方
+
 </script>
 
 <template>
@@ -118,7 +120,7 @@ const wolvesReels = ref([
             </div>
             <IgQrCard variant="panel" hint="掃碼追蹤 @clut_ipower" class="media-ig-qr" />
           </div>
-          <!-- ✅ 官方動態網格（響應式 3 列 → 2 列 → 1 列） -->
+          <!-- 官方動態網格 -->
           <div class="grid grid-3 ig-grid-responsive">
             <div
               v-for="reel in officialReels"
@@ -156,7 +158,7 @@ const wolvesReels = ref([
           </a>
         </div>
 
-        <!-- ✅ 狼窩動態網格（響應式 3 列 → 2 列 → 1 列） -->
+        <!-- 狼窩動態網格 -->
         <div class="grid grid-3 ig-grid-responsive">
           <div
             v-for="reel in wolvesReels"

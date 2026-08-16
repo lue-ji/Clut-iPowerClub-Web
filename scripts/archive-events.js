@@ -35,7 +35,7 @@ function readEventsFile() {
     // 提取 events 陣列部分
     const match = content.match(/export\s+const\s+events\s*=\s*(\[[\s\S]*\])\s*$/m)
     if (!match) {
-      console.error('❌ 無法解析 events.js，確保格式為 export const events = [...]')
+      console.error('❌無法解析，確保格式為 export const events = [...]')
       process.exit(1)
     }
 
@@ -44,7 +44,7 @@ function readEventsFile() {
     const events = Function(`return ${eventsCode}`)()
     return events
   } catch (error) {
-    console.error('❌ 讀取 events.js 失敗:', error.message)
+    console.error('❌讀取失敗:', error.message)
     process.exit(1)
   }
 }
@@ -66,11 +66,11 @@ function archiveEvents() {
   const active = events.filter(e => !isExpired(e))
 
   if (expired.length === 0) {
-    console.log('✅ 沒有過期的事件需要歸檔')
+    console.log('✅沒有過期的事件需要歸檔')
     return
   }
 
-  console.log(`📦 發現 ${expired.length} 個過期事件`)
+  console.log(`📦 發現${expired.length}個過期事件`)
 
   if (isDryRun) {
     console.log('\n📋 過期事件列表（--dry 模式，未執行更改）：')

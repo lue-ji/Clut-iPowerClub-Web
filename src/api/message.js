@@ -1,5 +1,5 @@
 const API_URL = (import.meta.env.VITE_GOOGLE_APPS_SCRIPT_URL || '').trim()
-const BASE = API_URL || '/api'
+const BASE = typeof window !== 'undefined' && window.location.hostname === 'localhost' ? '/api' : API_URL || '/api'
 
 const MAX_RETRIES = parseInt(import.meta.env.VITE_API_RETRY_COUNT || '3', 10)
 const RETRY_DELAY = parseInt(import.meta.env.VITE_API_RETRY_DELAY || '1000', 10)
