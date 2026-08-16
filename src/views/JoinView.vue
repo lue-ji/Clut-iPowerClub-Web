@@ -91,7 +91,7 @@
                 </div>
                 <label v-else for="file-input" class="upload-placeholder">
                   <span>📸 點擊拍照或選擇照片</span>
-                  <small>（大於 2MB 會自動壓縮）</small>
+                  <small>（手機拍照會自動壓縮，避免上傳失敗）</small>
                 </label>
               </div>
             </div>
@@ -781,6 +781,18 @@ textarea.text-input {
 
   .tech-list li {
     align-items: flex-start;
+  }
+
+  .tech-title {
+    font-size: clamp(1.7rem, 9vw, 2.4rem);
+    letter-spacing: 1px;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .hero-badge {
+    letter-spacing: 1.5px;
   }
 
   .upload-placeholder {
