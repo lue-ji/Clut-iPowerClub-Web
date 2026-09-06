@@ -31,6 +31,16 @@ const parseBody = (body) => {
   return body
 }
 
+const getDriveFileId = (value) => {
+  const match = String(value || '').match(/(?:[?&]id=|\/d\/)([A-Za-z0-9_-]+)/)
+  return match ? match[1] : ''
+}
+
+const toImageProxyUrl = (value) => {
+  const fileId = getDriveFileId(value)
+  return fileId ? `/api/messages?imageId=${encodeURIComponent(fileId)}` : value
+}
+
 export default async function handler(request, response) {
   response.setHeader('Cache-Control', 'no-store')
 
@@ -47,6 +57,11 @@ export default async function handler(request, response) {
     const token = getRequiredEnv('GAS_API_TOKEN')
     const gasUrl = makeGasUrl(scriptUrl, token)
     const options = { redirect: 'follow' }
+
+    const imageId = request.query?.imageId
+    if (request.method === 'GET' && imageId) {
+      gasUrl.searchParams.set('imageId', imageId)
+    }
 
     if (request.method === 'POST') {
       const form = new URLSearchParams()
@@ -67,6 +82,20 @@ export default async function handler(request, response) {
       payload = JSON.parse(text)
     } catch {
       throw new Error('GAS returned an invalid response')
+    }
+    if (imageId && payload?.status === 'success' && typeof payload.image === 'string') {
+      const match = payload.image.match(/^data:([^;]+);base64,(.+)$/)
+      if (!match) throw new Error('GAS returned an invalid image response')
+      response.setHeader('Cache-Control', 'public, max-age=3600')
+      response.setHeader('Content-Type', match[1])
+      return response.status(200).send(Buffer.from(match[2], 'base64'))
+    }
+
+    if (Array.isArray(payload)) {
+      payload = payload.map((item) => ({
+        ...item,
+        image: toImageProxyUrl(item.image),
+      }))
     }
     return response.status(upstream.ok ? 200 : upstream.status).json(payload)
   } catch (error) {

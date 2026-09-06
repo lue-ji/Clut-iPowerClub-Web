@@ -60,8 +60,9 @@ function createDriveImageFile(dataUrl, fileName) {
   const blob = Utilities.newBlob(bytes, contentType, fileName)
   const folder = DriveApp.getFolderById(DRIVE_FOLDER_ID)
   const file = folder.createFile(blob)
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW)
 
-  return file.getUrl()
+  return `https://drive.google.com/uc?export=view&id=${file.getId()}`
 }
 
 function authorizeDriveAccess() {
@@ -72,6 +73,76 @@ function authorizeDriveAccess() {
   )
   testFile.setTrashed(true)
   Logger.log(`Drive write access granted: ${folder.getName()}`)
+}
+
+function makeExistingDriveImagesPublic() {
+  const folder = DriveApp.getFolderById(DRIVE_FOLDER_ID)
+  const files = folder.getFiles()
+  let count = 0
+
+  while (files.hasNext()) {
+    const file = files.next()
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW)
+    count += 1
+  }
+
+  Logger.log(`Updated ${count} Drive files for public image access.`)
+}
+
+function migrateLegacyImages() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
+  const rows = sheet.getDataRange().getValues()
+  let migrated = 0
+  let failed = 0
+
+  rows.slice(1).forEach((row, index) => {
+    const image = String(row[4] || '')
+    if (!image.startsWith('data:image/')) return
+
+    try {
+      const name = String(row[1] || 'member')
+        .trim()
+        .replace(/[\\/:*?"<>|]/g, '_')
+      const fileUrl = createDriveImageFile(image, `legacy_${name}_${index + 2}.jpg`)
+      sheet.getRange(index + 2, 5).setValue(fileUrl)
+      migrated += 1
+    } catch (err) {
+      failed += 1
+      Logger.log(`Failed to migrate row ${index + 2}: ${err.message}`)
+    }
+  })
+
+  Logger.log(`Migrated ${migrated} legacy images; failed ${failed}.`)
+}
+
+function toDriveImageUrl(value) {
+  const imageUrl = String(value || '')
+  const idMatch = imageUrl.match(/(?:[?&]id=|\/d\/)([A-Za-z0-9_-]+)/)
+  if (!idMatch) return imageUrl
+  return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
+}
+
+function toImageDataUrl(value) {
+  const imageUrl = String(value || '')
+  if (imageUrl.startsWith('data:image/')) return imageUrl
+
+  const idMatch = imageUrl.match(/(?:[?&]id=|\/d\/)([A-Za-z0-9_-]+)/)
+  if (!idMatch) return imageUrl
+
+  try {
+    const file = DriveApp.getFileById(idMatch[1])
+    const blob = file.getBlob()
+    return `data:${blob.getContentType()};base64,${Utilities.base64Encode(blob.getBytes())}`
+  } catch (err) {
+    Logger.log(`Failed to read Drive image ${idMatch[1]}: ${err.message}`)
+    return ''
+  }
+}
+
+function getDriveImageDataUrl(fileId) {
+  const file = DriveApp.getFileById(fileId)
+  const blob = file.getBlob()
+  return `data:${blob.getContentType()};base64,${Utilities.base64Encode(blob.getBytes())}`
 }
 
 function doPost(e) {
@@ -121,6 +192,13 @@ function doPost(e) {
 function doGet(e) {
   try {
     if (!isAuthorized(e)) return unauthorizedResponse()
+
+    if (e.parameter && e.parameter.imageId) {
+      return jsonResponse({
+        status: 'success',
+        image: getDriveImageDataUrl(e.parameter.imageId),
+      })
+    }
 
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
     const data = sheet.getDataRange().getValues()
