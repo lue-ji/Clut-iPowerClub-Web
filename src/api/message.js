@@ -1,5 +1,5 @@
-const API_URL = (import.meta.env.VITE_GOOGLE_APPS_SCRIPT_URL || '').trim()
-const BASE = typeof window !== 'undefined' && window.location.hostname === 'localhost' ? '/api' : API_URL || '/api'
+// 所有瀏覽器請求都經由同網域 API；GAS URL 與驗證資訊只存在於伺服器端環境變數。
+const BASE = '/api/messages'
 
 const MAX_RETRIES = parseInt(import.meta.env.VITE_API_RETRY_COUNT || '3', 10)
 const RETRY_DELAY = parseInt(import.meta.env.VITE_API_RETRY_DELAY || '1000', 10)
@@ -43,10 +43,13 @@ export const getMessages = async () => {
       throw new Error(`API 錯誤: ${res.status} ${res.statusText}`)
     }
     const data = await res.json()
-    return data.reverse()
+    if (!Array.isArray(data)) {
+      throw new Error(data?.message || '伺服器回傳格式錯誤')
+    }
+    return data
   } catch (err) {
     console.error('取得訊息失敗:', err.message)
-    throw new Error('無法連接到伺服器，請稍後重試')
+    throw new Error('無法連接到伺服器，請稍後重試', { cause: err })
   }
 }
 
@@ -69,6 +72,6 @@ export const postMessage = async (data) => {
     return result
   } catch (err) {
     console.error('送出訊息失敗:', err.message)
-    throw new Error(err.message || '送出失敗，請稍後重試')
+    throw new Error(err.message || '送出失敗，請稍後重試', { cause: err })
   }
 }

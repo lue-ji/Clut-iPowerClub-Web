@@ -1,8 +1,4 @@
-import { eventload } from '@/utils/imgloader'
 import logoPng from '@/../logo.png'
-
-const imgmap = eventload()
-const getImage = (folder, file) => imgmap[folder]?.find(i => i.name === file)?.url || logoPng
 
 // 精簡結構
 export const stories = [
@@ -11,7 +7,7 @@ export const stories = [
     slug: 'wanmei-20260528',
     author: '婉媚',
     excerpt: '很高興能接觸到不同的人跟信仰，學習到不同的看法，改變了一些價值觀，更加成長進步，也感受到大家的溫暖~',
-    image: getImage('staff', 'wanmei.jpg'),
+    image: logoPng,
     date: '2026-05-28',
     featured: true
   },
@@ -20,7 +16,7 @@ export const stories = [
     slug: 'wenxin-20260528',
     author: '文馨',
     excerpt: '我從一個I(90%)人成為一個I(40%)人',
-    image: getImage('staff', 'wenxin.jpg'),
+    image: logoPng,
     date: '2026-05-28',
     featured: true
   },

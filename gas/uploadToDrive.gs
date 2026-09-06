@@ -1,5 +1,7 @@
-const SECRET = 'ipower20160802'
 const DRIVE_FOLDER_ID = '1fDvy1B0EMs5UdIX1pn2zpjwd6azMF2v7'
+const API_TOKEN_PROPERTY = 'API_TOKEN'
+const MAX_IMAGE_DATA_URL_LENGTH = 7 * 1024 * 1024
+const POST_RATE_LIMIT_SECONDS = 60
 
 function jsonResponse(data) {
   return ContentService
@@ -24,8 +26,30 @@ function parsePostData(e) {
   return data
 }
 
+function getApiToken() {
+  return PropertiesService.getScriptProperties().getProperty(API_TOKEN_PROPERTY)
+}
+
+function isAuthorized(e) {
+  const expectedToken = getApiToken()
+  const providedToken = e && e.parameter ? e.parameter.token : ''
+  return Boolean(expectedToken) && providedToken === expectedToken
+}
+
+function unauthorizedResponse() {
+  return jsonResponse({ status: 'error', message: 'Unauthorized' })
+}
+
+function getString(data, key, maxLength) {
+  const value = String(data[key] || '').trim()
+  if (value.length > maxLength) {
+    throw new Error(`${key} 過長`)
+  }
+  return value
+}
+
 function createDriveImageFile(dataUrl, fileName) {
-  const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.*)$/)
+  const match = dataUrl.match(/^data:(image\/(?:jpeg|png|webp|gif));base64,([A-Za-z0-9+/=]+)$/)
   if (!match) {
     throw new Error('無效的圖片資料格式')
   }
@@ -42,32 +66,34 @@ function createDriveImageFile(dataUrl, fileName) {
 
 function doPost(e) {
   try {
+    if (!isAuthorized(e)) return unauthorizedResponse()
+
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
     const cache = CacheService.getScriptCache()
     const data = parsePostData(e)
 
-    const userKey = (data.contact || 'guest') + '_' + Math.floor(Date.now() / 10000)
+    const clientIp = getString(data, 'clientIp', 100) || 'unknown'
+    const userKey = `post_${clientIp}`
     if (cache.get(userKey)) {
       return jsonResponse({ status: 'error', message: '發送速度過快' })
     }
-    cache.put(userKey, '1', 4)
+    cache.put(userKey, '1', POST_RATE_LIMIT_SECONDS)
 
-    if (data.token !== SECRET) {
-      return jsonResponse({ status: 'error', message: 'Unauthorized' })
-    }
-
-    if (!data.name || !data.contact) {
+    const name = getString(data, 'name', 15)
+    const department = getString(data, 'department', 100)
+    const contact = getString(data, 'contact', 100)
+    const text = getString(data, 'text', 60)
+    if (!name || !contact) {
       return jsonResponse({ status: 'error', message: '缺少必要欄位' })
-    }
-
-    if (data.name.length > 15 || (data.text && data.text.length > 60)) {
-      return jsonResponse({ status: 'error', message: '稱呼或內容過長' })
     }
 
     let fileUrl = ''
     if (data.image) {
+      if (String(data.image).length > MAX_IMAGE_DATA_URL_LENGTH) {
+        return jsonResponse({ status: 'error', message: '圖片檔案過大' })
+      }
       try {
-        const fileName = data.imageName || `photo_${Date.now()}.jpg`
+        const fileName = getString(data, 'imageName', 120) || `photo_${Date.now()}.jpg`
         fileUrl = createDriveImageFile(data.image, fileName)
       } catch (err) {
         return jsonResponse({ status: 'error', message: '圖片上傳失敗：' + err.message })
@@ -76,11 +102,11 @@ function doPost(e) {
 
     sheet.appendRow([
       new Date(),
-      data.name,
-      data.department || '',
-      data.contact,
+      name,
+      department,
+      contact,
       fileUrl,
-      data.text || ''
+      text
     ])
 
     return jsonResponse({ status: 'success', fileUrl })
@@ -89,8 +115,10 @@ function doPost(e) {
   }
 }
 
-function doGet() {
+function doGet(e) {
   try {
+    if (!isAuthorized(e)) return unauthorizedResponse()
+
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
     const data = sheet.getDataRange().getValues()
 
@@ -98,7 +126,6 @@ function doGet() {
       time: row[0],
       name: row[1],
       department: row[2],
-      contact: row[3],
       image: row[4] || '',
       text: row[5] || ''
     }))

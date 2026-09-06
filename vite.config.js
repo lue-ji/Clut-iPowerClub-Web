@@ -2,13 +2,20 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
 
 // 使用 Vite 的 loadEnv 讀取 .env 檔案
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const scriptUrl = env.VITE_GOOGLE_APPS_SCRIPT_URL || ''
+  const scriptUrl = env.GOOGLE_APPS_SCRIPT_URL || ''
+  const gasApiToken = env.GAS_API_TOKEN || ''
   const scriptPath = scriptUrl.replace('https://script.google.com', '')
+  const proxyTarget = scriptUrl && gasApiToken
+    ? {
+        target: 'https://script.google.com',
+        changeOrigin: true,
+        rewrite: () => `${scriptPath}${scriptPath.includes('?') ? '&' : '?'}token=${encodeURIComponent(gasApiToken)}`,
+      }
+    : undefined
 
   return {
     plugins: [
@@ -21,13 +28,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      proxy: {
-        '/api': {
-          target: 'https://script.google.com',
-          changeOrigin: true,
-          rewrite: (path) => path.replace('/api', scriptPath)
-        }
-      }
+      proxy: proxyTarget ? { '/api/messages': proxyTarget } : {},
     },
     assetsInclude: [
       '**/*.pdf',

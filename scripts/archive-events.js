@@ -12,8 +12,13 @@
  *   npm run archive:events -- --dry # 只預覽，不執行更改
  */
 
-const fs = require('fs')
-const path = require('path')
+import fs from 'node:fs'
+import path from 'node:path'
+import vm from 'node:vm'
+import { fileURLToPath } from 'node:url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // 配置檔路徑
 const eventsPath = path.join(__dirname, '../src/data/events.js')
@@ -28,10 +33,6 @@ function readEventsFile() {
   try {
     const content = fs.readFileSync(eventsPath, 'utf-8')
     
-    // 使用 require 的技巧：寫入臨時 JSON，讀取後刪除
-    // 或直接用正則提取 export const events = [...]
-    // 為了簡單，我們使用 eval 的安全替代方案
-    
     // 提取 events 陣列部分
     const match = content.match(/export\s+const\s+events\s*=\s*(\[[\s\S]*\])\s*$/m)
     if (!match) {
@@ -39,10 +40,11 @@ function readEventsFile() {
       process.exit(1)
     }
 
-    // 透過 Function 建構子安全求值(避免直接eval)
-    const eventsCode = match[1]
-    const events = Function(`return ${eventsCode}`)()
-    return events
+    // 活動檔使用 getImage 輔助函式；歸檔時保留可讀的來源路徑即可。
+    const context = vm.createContext({
+      getImage: (folder, fileName) => `/src/assets/events/${folder}/${fileName}`,
+    })
+    return vm.runInContext(`(${match[1]})`, context, { timeout: 1000 })
   } catch (error) {
     console.error('❌讀取失敗:', error.message)
     process.exit(1)
@@ -70,7 +72,7 @@ function archiveEvents() {
     return
   }
 
-  console.log(`📦 發現${expired.length}個過期事件`)
+  console.log(`📦 發現 ${expired.length} 個過期事件`)
 
   if (isDryRun) {
     console.log('\n📋 過期事件列表（--dry 模式，未執行更改）：')
@@ -86,7 +88,7 @@ function archiveEvents() {
   if (fs.existsSync(archivePath)) {
     try {
       archive = JSON.parse(fs.readFileSync(archivePath, 'utf-8'))
-    } catch (error) {
+    } catch {
       console.warn('⚠️  events_archive.json 格式錯誤，將建立新檔案')
     }
   }

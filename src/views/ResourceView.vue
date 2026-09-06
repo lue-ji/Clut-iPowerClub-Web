@@ -23,6 +23,7 @@
           :src="currentDoc.url"
           frameborder="0"
           loading="lazy"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
           allowfullscreen
           title="Google 簡報檢視器"
         ></iframe>
@@ -43,6 +44,7 @@
           :src="officeEmbedUrl"
           frameborder="0"
           loading="lazy"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
           title="Office 文件檢視器"
         ></iframe>
 
@@ -51,6 +53,7 @@
           :src="resolvedDocUrl"
           frameborder="0"
           loading="lazy"
+          sandbox="allow-scripts allow-same-origin"
           title="PDF 檢視器"
         ></iframe>
 
@@ -181,6 +184,29 @@ const resetDocxPreview = () => {
   docxLoading.value = false
 }
 
+const sanitizeDocxHtml = (html) => {
+  const documentFragment = new DOMParser().parseFromString(html, 'text/html')
+  const blockedSelector = 'script, style, iframe, object, embed, form, input, button, link, meta'
+  documentFragment.querySelectorAll(blockedSelector).forEach((element) => element.remove())
+
+  documentFragment.querySelectorAll('*').forEach((element) => {
+    for (let index = element.attributes.length - 1; index >= 0; index -= 1) {
+      const attribute = element.attributes.item(index)
+      if (!attribute) continue
+      const name = attribute.name.toLowerCase()
+      const value = attribute.value.trim()
+      if (name.startsWith('on') || name === 'style') {
+        element.removeAttribute(attribute.name)
+      }
+      if ((name === 'href' || name === 'src') && !/^(https?:|mailto:|#|\/)/i.test(value)) {
+        element.removeAttribute(attribute.name)
+      }
+    }
+  })
+
+  return documentFragment.body.innerHTML
+}
+
 const loadDocxPreview = async (doc) => {
   resetDocxPreview()
   docxLoading.value = true
@@ -192,7 +218,7 @@ const loadDocxPreview = async (doc) => {
     const arrayBuffer = await res.arrayBuffer()
     const mammoth = await import('mammoth')
     const result = await mammoth.convertToHtml({ arrayBuffer })
-    docxHtml.value = result.value
+    docxHtml.value = sanitizeDocxHtml(result.value)
   } catch (err) {
     console.warn('DOCX 預覽失敗:', err)
     docxError.value =
@@ -232,6 +258,7 @@ onMounted(() => {
 })
 onUnmounted(() => {
   window.removeEventListener('keydown', handleEsc)
+  document.body.style.overflow = ''
 })
 </script>
 

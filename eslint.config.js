@@ -21,8 +21,23 @@ export default defineConfig([
     },
   },
 
+  {
+    files: ['api/**/*.js', 'scripts/**/*.js', 'tests/**/*.js', 'vite.config.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+
   js.configs.recommended,
   ...pluginVue.configs['flat/essential'],
+
+  {
+    rules: {
+      'vue/multi-word-component-names': ['error', { ignores: ['Footer', 'Navbar'] }],
+    },
+  },
 
   ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),
 

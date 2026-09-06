@@ -99,8 +99,6 @@ const catcherX = ref(0)
 const catcherWidth = 120
 const fallingItems = ref([])
 const resultCardRef = ref(null)
-const isGeneratingImg = ref(false)
-
 let animationFrameId = null
 let timerId = null
 let itemIdCounter = 0

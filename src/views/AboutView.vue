@@ -253,6 +253,8 @@ function step() {
     p.x += p.vx
     p.y += p.vy
 
+    if (p.life !== Infinity) p.life -= 1
+
     // wrap
     if (p.x < -10) p.x = w + 10
     if (p.x > w + 10) p.x = -10
@@ -265,14 +267,13 @@ function step() {
     ctx.fill()
   }
 
+  particles = particles.filter((particle) => particle.life > 0)
+
   animationId = requestAnimationFrame(step)
 }
 
 function createBurst(x, y, count = 30) {
-  const c = particleCanvas.value
-  if (!c) return
-  const w = c.width / (window.devicePixelRatio || 1)
-  const h = c.height / (window.devicePixelRatio || 1)
+  if (!particleCanvas.value) return
   for (let i = 0; i < count; i++) {
     const speed = rand(1, 4)
     const angle = rand(0, Math.PI * 2)

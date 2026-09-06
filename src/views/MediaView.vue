@@ -48,6 +48,7 @@ const wolvesReels = ref([
                 src="https://www.youtube.com/embed/_HbfiDjQdn0?autoplay=0&rel=0"
                 title="iPower大型活動回顧-復活節特輯"
                 frameborder="0"
+                sandbox="allow-scripts allow-same-origin allow-presentation"
                 allowfullscreen
               ></iframe>
             </div>
@@ -59,6 +60,7 @@ const wolvesReels = ref([
                 title="iPower解題班-願景"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                sandbox="allow-scripts allow-same-origin allow-presentation"
                 allowfullscreen
               ></iframe>
             </div>
@@ -70,6 +72,7 @@ const wolvesReels = ref([
                 title="iPower解題班-成長故事"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                sandbox="allow-scripts allow-same-origin allow-presentation"
                 allowfullscreen
               ></iframe>
             </div>
@@ -81,6 +84,7 @@ const wolvesReels = ref([
                 title="iPower2025夢想特務-工作坊宣傳"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                sandbox="allow-scripts allow-same-origin allow-presentation"
                 allowfullscreen
               ></iframe>
             </div>
@@ -92,6 +96,7 @@ const wolvesReels = ref([
                 title="iPower解題班-領袖學院宣傳"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                sandbox="allow-scripts allow-same-origin allow-presentation"
                 allowfullscreen
               ></iframe>
             </div>
@@ -103,6 +108,7 @@ const wolvesReels = ref([
                 title="iPower偏鄉服務-雲林石龜-EQ營1"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                sandbox="allow-scripts allow-same-origin allow-presentation"
                 allowfullscreen
               ></iframe>
             </div>
@@ -134,6 +140,7 @@ const wolvesReels = ref([
                   frameborder="0"
                   scrolling="no"
                   allowtransparency="true"
+                  sandbox="allow-scripts allow-same-origin allow-popups"
                 ></iframe>
               </div>
             </div>
@@ -172,6 +179,7 @@ const wolvesReels = ref([
                 frameborder="0"
                 scrolling="no"
                 allowtransparency="true"
+                sandbox="allow-scripts allow-same-origin allow-popups"
               ></iframe>
             </div>
           </div>

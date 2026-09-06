@@ -141,7 +141,15 @@ onMounted(() => {
     now.value = new Date()
   }, 60000)
 })
-onUnmounted(() => clearInterval(timerId))
+const clearImagePreview = () => {
+  if (imagePreview.value) URL.revokeObjectURL(imagePreview.value)
+  imagePreview.value = null
+}
+
+onUnmounted(() => {
+  clearInterval(timerId)
+  clearImagePreview()
+})
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 
@@ -201,6 +209,7 @@ const handleFileChange = async (e) => {
   if (!file) return
 
   error.value = null
+  clearImagePreview()
 
   try {
     form.value.imageName = file.name || `photo_${Date.now()}.jpg`
@@ -244,7 +253,7 @@ const handleFileChange = async (e) => {
 }
 
 const removeImage = () => {
-  imagePreview.value = null
+  clearImagePreview()
   form.value.image = ''
   form.value.imageName = ''
   const input = document.getElementById('file-input')
@@ -261,11 +270,6 @@ const submitForm = async () => {
     loading.value = true
     error.value = null
 
-    const token = import.meta.env.VITE_JOIN_FORM_TOKEN
-    if (!token) {
-      throw new Error('系統尚未設定報名驗證，請稍後再試或聯繫幹部。')
-    }
-
     // 基本前端驗證（和 GAS 的檢查保持一致）
     if (!form.value.name || !form.value.contact) {
       throw new Error('請填寫稱呼與聯絡方式。')
@@ -280,7 +284,6 @@ const submitForm = async () => {
     // 整理要送出的資料（不設定 Content-Type，使用 URLSearchParams 在 postMessage 處理）
     const payload = {
       ...form.value,
-      token,
       type: computeType(),
     }
 
@@ -299,7 +302,7 @@ const submitForm = async () => {
       })
 
       form.value = { name: '', department: '', contact: '', text: '', image: '', imageName: '' }
-      imagePreview.value = null
+      clearImagePreview()
       const input = document.getElementById('file-input')
       if (input) input.value = ''
     } else {
