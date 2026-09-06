@@ -3,7 +3,7 @@ const BASE = '/api/messages'
 
 const MAX_RETRIES = parseInt(import.meta.env.VITE_API_RETRY_COUNT || '3', 10)
 const RETRY_DELAY = parseInt(import.meta.env.VITE_API_RETRY_DELAY || '1000', 10)
-const TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '10000', 10)
+const TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '30000', 10)
 
 const fetchWithRetry = async (url, options = {}, retries = MAX_RETRIES) => {
   try {
@@ -72,6 +72,9 @@ export const postMessage = async (data) => {
     return result
   } catch (err) {
     console.error('送出訊息失敗:', err.message)
+    if (err.name === 'AbortError') {
+      throw new Error('圖片上傳處理時間較長，請稍後再試。', { cause: err })
+    }
     throw new Error(err.message || '送出失敗，請稍後重試', { cause: err })
   }
 }

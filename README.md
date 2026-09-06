@@ -18,13 +18,13 @@ npm run dev
 
 ## 環境變數
 
-| 變數 | 說明 |
-|------|------|
+| 變數                     | 說明                                                                     |
+| ------------------------ | ------------------------------------------------------------------------ |
 | `GOOGLE_APPS_SCRIPT_URL` | GAS Web App 完整 URL（結尾 `/exec`）。僅設定於 Vercel 或本機伺服器端環境 |
-| `GAS_API_TOKEN` | GAS 端 API_TOKEN 的相同值。僅設定於 Vercel 或本機伺服器端環境 |
-| `VITE_API_TIMEOUT` | 選用，預設 10000 ms |
-| `VITE_API_RETRY_COUNT` | 選用，GET 重試次數，預設 3 |
-| `VITE_API_RETRY_DELAY` | 選用，重試間隔 ms |
+| `GAS_API_TOKEN`          | GAS 端 API_TOKEN 的相同值。僅設定於 Vercel 或本機伺服器端環境            |
+| `VITE_API_TIMEOUT`       | 選用，預設 30000 ms；圖片上傳建議至少 30000                              |
+| `VITE_API_RETRY_COUNT`   | 選用，GET 重試次數，預設 3                                               |
+| `VITE_API_RETRY_DELAY`   | 選用，重試間隔 ms                                                        |
 
 瀏覽器固定呼叫同網域 `/api/messages`，Vercel serverless function 會代轉至 GAS，因此敏感設定不會被打包到前端。
 

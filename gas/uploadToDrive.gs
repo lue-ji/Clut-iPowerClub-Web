@@ -4,9 +4,9 @@ const MAX_IMAGE_DATA_URL_LENGTH = 7 * 1024 * 1024
 const POST_RATE_LIMIT_SECONDS = 60
 
 function jsonResponse(data) {
-  return ContentService
-    .createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON)
+  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(
+    ContentService.MimeType.JSON,
+  )
 }
 
 function parsePostData(e) {
@@ -64,6 +64,16 @@ function createDriveImageFile(dataUrl, fileName) {
   return file.getUrl()
 }
 
+function authorizeDriveAccess() {
+  const folder = DriveApp.getFolderById(DRIVE_FOLDER_ID)
+  const testFile = folder.createFile(
+    'GAS Drive authorization test',
+    'This file is created and trashed to verify Drive write access.',
+  )
+  testFile.setTrashed(true)
+  Logger.log(`Drive write access granted: ${folder.getName()}`)
+}
+
 function doPost(e) {
   try {
     if (!isAuthorized(e)) return unauthorizedResponse()
@@ -100,14 +110,7 @@ function doPost(e) {
       }
     }
 
-    sheet.appendRow([
-      new Date(),
-      name,
-      department,
-      contact,
-      fileUrl,
-      text
-    ])
+    sheet.appendRow([new Date(), name, department, contact, fileUrl, text])
 
     return jsonResponse({ status: 'success', fileUrl })
   } catch (err) {
@@ -122,13 +125,16 @@ function doGet(e) {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
     const data = sheet.getDataRange().getValues()
 
-    const result = data.slice(1).reverse().map((row) => ({
-      time: row[0],
-      name: row[1],
-      department: row[2],
-      image: row[4] || '',
-      text: row[5] || ''
-    }))
+    const result = data
+      .slice(1)
+      .reverse()
+      .map((row) => ({
+        time: row[0],
+        name: row[1],
+        department: row[2],
+        image: row[4] || '',
+        text: row[5] || '',
+      }))
 
     return jsonResponse(result)
   } catch (err) {
