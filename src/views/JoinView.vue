@@ -7,14 +7,13 @@
         <span class="hero-badge tech-badge fade-in">ACCESS GRANTED</span>
         <h1 class="hero-title tech-title fade-in">SYSTEM.JOIN(iPower)</h1>
         <p class="hero-text fade-in">
-          恭喜通過系統潛力測試。<br>未來的大神，請在此建立你的專屬檔案，我們將盡快為你開通權限。
+          恭喜通過系統潛力測試。<br />未來的大神，請在此建立你的專屬檔案，我們將盡快為你開通權限。
         </p>
       </div>
     </section>
 
     <section class="section ip-bg-soft">
       <div class="page join-layout">
-
         <div class="card ip-glass-card benefit-card fade-in">
           <span class="ip-badge tech-highlight">UNLOCKED PRIVILEGES</span>
           <h2 class="tech-heading">已解鎖的核心權限</h2>
@@ -39,7 +38,7 @@
             <div class="price-display">
               <div class="price-original">
                 <span>原價</span>
-                <span class="strike-through">$200</span>
+                <span class="strike-through">$250</span>
               </div>
               <div class="price-early-bird">
                 <span class="currency">$</span>
@@ -47,16 +46,16 @@
               </div>
             </div>
 
-            <div class="early-bird-tag" v-if="isEarlyBird">
-              🔥 早鳥優惠熱烈開放中，先搶先贏！
-            </div>
+            <div class="early-bird-tag" v-if="isEarlyBird">🔥 早鳥優惠熱烈開放中，先搶先贏！</div>
           </div>
         </div>
 
         <div class="card ip-glass-card form-card fade-in">
           <div class="form-head">
             <h2 class="tech-heading">建立成員檔案</h2>
-            <p>資料加密傳輸中... 我們收到後會盡快與你聯繫。<br>也歡迎附上照片分享你通過測試的喜悅！</p>
+            <p>
+              資料加密傳輸中... 我們收到後會盡快與你聯繫。<br />也歡迎附上照片分享你通過測試的喜悅！
+            </p>
           </div>
 
           <form @submit.prevent="submitForm" class="join-form">
@@ -72,19 +71,34 @@
 
             <div class="field">
               <label>通訊協定 (聯絡方式)</label>
-              <input class="text-input" v-model="form.contact" placeholder="@IG/LineID/電話" required />
+              <input
+                class="text-input"
+                v-model="form.contact"
+                placeholder="@IG/LineID/電話"
+                required
+              />
             </div>
 
             <div class="field">
               <label>想對核心團隊說的話 (選填)</label>
-              <textarea class="text-input" v-model="form.text" placeholder="分享一下剛才玩小遊戲的心得，或是對社團的期待吧！"
-                rows="3"></textarea>
+              <textarea
+                class="text-input"
+                v-model="form.text"
+                placeholder="分享一下剛才玩小遊戲的心得，或是對社團的期待吧！"
+                rows="3"
+              ></textarea>
             </div>
 
             <div class="field">
               <label>上傳個人識別影像 (選填)</label>
               <div class="image-upload-wrap">
-                <input type="file" accept="image/*" @change="handleFileChange" id="file-input" class="file-input" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  @change="handleFileChange"
+                  id="file-input"
+                  class="file-input"
+                />
                 <div v-if="imagePreview" class="preview-box">
                   <img :src="imagePreview" class="img-preview" />
                   <button type="button" @click="removeImage" class="remove-btn">✕</button>
@@ -103,9 +117,7 @@
             <p v-if="error" class="error">{{ error }}</p>
           </form>
 
-          <p v-if="submitted" class="success">
-            🎉 已成功寫入系統！我們會盡快私訊你～
-          </p>
+          <p v-if="submitted" class="success">🎉 已成功寫入系統！我們會盡快私訊你～</p>
         </div>
       </div>
     </section>
@@ -123,17 +135,17 @@ const submitted = ref(false)
 const loading = ref(false)
 const error = ref(null)
 
-const DEADLINE = new Date('2026-09-28T23:00:00')
-const EARLY_EARLY_DATE = new Date('2026-09-25T19:30:00')
+const DEADLINE = new Date('2026-09-24T20:00:00')
+const EARLY_EARLY_DATE = new Date('2026-09-16T22:00:00')
 
 const now = ref(new Date())
 let timerId = null
 
 const isEarlyBird = computed(() => now.value < DEADLINE)
 const currentFee = computed(() => {
-  if (now.value < EARLY_EARLY_DATE) return 100
-  if (now.value < DEADLINE) return 150
-  return 200
+  if (now.value < EARLY_EARLY_DATE) return 150
+  if (now.value < DEADLINE) return 200
+  return 250
 })
 
 onMounted(() => {
@@ -193,7 +205,7 @@ const compressImage = (file, maxWidth = 1200, quality = 0.7) => {
             }
           },
           'image/jpeg',
-          quality
+          quality,
         )
       }
       img.onerror = () => reject(new Error('圖片載入失敗'))
@@ -262,7 +274,7 @@ const removeImage = () => {
 
 // 清楚判斷 type
 const computeType = () => {
-  return (form.value.text || form.value.image) ? 'story' : 'join'
+  return form.value.text || form.value.image ? 'story' : 'join'
 }
 
 const submitForm = async () => {
@@ -298,7 +310,7 @@ const submitForm = async () => {
         confirmButtonColor: '#234d74',
         confirmButtonText: 'Fantastic!',
         background: 'rgba(255, 255, 255, 0.9)',
-        backdrop: `rgba(9, 19, 33, 0.6)`
+        backdrop: `rgba(9, 19, 33, 0.6)`,
       })
 
       form.value = { name: '', department: '', contact: '', text: '', image: '', imageName: '' }
@@ -314,7 +326,7 @@ const submitForm = async () => {
       title: '哎呀！傳輸中斷啦~',
       text: error.value,
       icon: 'error',
-      confirmButtonColor: '#c0392b'
+      confirmButtonColor: '#c0392b',
     })
   } finally {
     loading.value = false
@@ -330,7 +342,7 @@ const submitForm = async () => {
 .tech-badge {
   font-family: 'Space Grotesk', sans-serif;
   letter-spacing: 3px;
-  color: #22D3EE;
+  color: #22d3ee;
   background: rgba(34, 211, 238, 0.1) !important;
   border: 1px solid rgba(34, 211, 238, 0.4) !important;
   box-shadow: 0 0 10px rgba(34, 211, 238, 0.2);
@@ -339,7 +351,7 @@ const submitForm = async () => {
 .tech-title {
   font-family: 'Space Grotesk', 'Noto Sans TC', sans-serif;
   letter-spacing: 2px;
-  background: linear-gradient(135deg, #fff, #22D3EE);
+  background: linear-gradient(135deg, #fff, #22d3ee);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -353,7 +365,7 @@ const submitForm = async () => {
 }
 
 .tech-highlight {
-  background: linear-gradient(90deg, #A855F7, #22D3EE);
+  background: linear-gradient(90deg, #a855f7, #22d3ee);
   color: white !important;
   padding: 4px 12px;
   border-radius: 8px;
